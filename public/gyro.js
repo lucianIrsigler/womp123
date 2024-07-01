@@ -10,7 +10,7 @@ function handleOrientation(event) {
   let x = event.beta; // In degree in the range [-180,180)
   let y = event.gamma; // In degree in the range [-90,90)
 
-  output.textContent = `beta: ${x}\n`;
+  output.textContent = `beta: ${x}||`;
   output.textContent += `gamma: ${y}\n`;
 
   // Because we don't want to have the device upside down
