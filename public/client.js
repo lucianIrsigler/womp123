@@ -90,7 +90,7 @@ socket.on("roomFull", () => {
   }
 });
 
-socket.on("gameStarted", () => {
+/*socket.on("gameStarted", () => {
   lobby.style.display = "none";
   game.style.display = "block";
 
@@ -114,7 +114,7 @@ socket.on("gameStarted", () => {
       startSendingGyroscopeData();
     }
   }
-});
+});*/
 
 socket.on("error", (message) => {
   alert(message);
@@ -130,8 +130,9 @@ function updatePlayerList(players) {
 
   if (players.length < 4) {
     roomStatus.textContent = `Waiting for players... (${players.length}/4)`;
-    if (isHost) {
-      startGameBtn.disabled = true;
+    console.log(players)
+    if (isHost && players.length>=1) {
+      startGameBtn.disabled = false;
     }
   } else {
     roomStatus.textContent = "Room is full. Ready to start!";
@@ -183,20 +184,31 @@ function stopSendingGyroscopeData() {
 // Add a handler for gyroscope data on the host side
 socket.on("gyroscopeUpdate", ({ playerId, data }) => {
   updateGyroscopeDisplay(playerId, data);
-  console.log("here")
+
 });
 
 // Function to update the gyroscope display on the host screen
 function updateGyroscopeDisplay(playerId, data) {
+  
   const playerElement = document.getElementById(`player-${playerId}`);
+
   if (!playerElement) {
     const newPlayerElement = document.createElement("div");
     newPlayerElement.id = `player-${playerId}`;
+    newPlayerElement.classList.add("garden")
+
+    const ball = document.createElement("div");
+    ball.id = `player-${playerId}-ball`;
+    ball.classList.add("ball")
+
     document.getElementById("gyroscope-data").appendChild(newPlayerElement);
+    document.getElementById(`player-${playerId}`).appendChild(ball)
   }
-  document.getElementById(
-    `player-${playerId}`
-  ).textContent = `Player ${playerId}: Alpha: ${data.alpha.toFixed(
-    2
-  )}, Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
+  document.getElementById(`player-${playerId}`).addEventListener("deviceorientation",handleOrientation)
 }
+
+function handleOrientation(event) {
+  console.log(event);
+}
+
+
