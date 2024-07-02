@@ -1,4 +1,4 @@
-const socket = io();
+const socket1 = io();
 
 const mainMenu = document.getElementById("main-menu");
 const joinForm = document.getElementById("join-form");
@@ -14,7 +14,7 @@ const roomCodeDisplay = document.getElementById("room-code-display");
 const playerList = document.getElementById("player-list");
 const roomStatus = document.getElementById("room-status");
 
-socket.on("updateBall",(playerID,data)=>{
+socket1.on("updateBall",(playerID,data)=>{
     updateGyroscopeDisplay(playerID, data);
 })
 
