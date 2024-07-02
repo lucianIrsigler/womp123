@@ -9,7 +9,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3006;
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
 });

@@ -8,7 +8,8 @@
     "http": "^0.0.1-security"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\""
+    "test": "echo \"Error: no test specified\"",
+    "develop" : "git add . && git commit \"Updated\" && git push origin master"
   },
   "repository": {
     "type": "git",
