@@ -203,7 +203,7 @@ function updateGyroscopeDisplay(playerId, data) {
 
     document.getElementById("gyroscope-data").appendChild(newPlayerElement);
     document.getElementById(`player-${playerId}`).appendChild(ball)
-    updateBall(document.getElementById(`player-${playerId}`),
+    updateThing(document.getElementById(`player-${playerId}`),
       document.getElementById(`player-${playerId}-ball`),
       data.beta,
       data.gamma)
