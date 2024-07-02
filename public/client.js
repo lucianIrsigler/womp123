@@ -153,9 +153,19 @@ function handleOrientation(event) {
 // Add this function to start sending gyroscope data
 function startSendingGyroscopeData() {
   gyroscopeInterval = setInterval(() => {
+
+    let vectorX = Math.sin(gyroscopeData.beta) * Math.cos(gyroscopeData.gamma)
+    let vectorY = Math.sin(gyroscopeData.beta) * Math.cos(gyroscopeData.gamma)
+    //let vectorZ = Math.sin(gyroscopeData.beta)
+
+    vectors = {
+      "x":vectorX,
+      "y":vectorY,
+    }
+
     socket.emit("gyroscopeData", {
       roomCode: currentRoom,
-      data: gyroscopeData,
+      data: vectors,
     });
   }, 100); // Send data every 100ms
 
@@ -203,12 +213,14 @@ function updateGyroscopeDisplay(playerId, data) {
       data.beta,
       data.gamma)
 
+  
+
       
-      document.getElementById(
-        `player-${playerId}-text`
-      ).textContent = `Player ${playerId}: Alpha: ${data.alpha.toFixed(
-        2
-      )}, Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
+  document.getElementById(
+    `player-${playerId}-text`
+  ).textContent = `Player ${playerId}: Alpha: ${data.alpha.toFixed(
+    2
+  )}, Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
 }
 
 function updateThing(garden,ball,beta,gamma) {
@@ -217,9 +229,7 @@ function updateThing(garden,ball,beta,gamma) {
 
   let x = beta; // In degree in the range [-180,180)
   let y = gamma; // In degree in the range [-90,90)
-  let vectorX = Math.sin(beta) * Math.cos(gamma)
-  let vectorY = Math.sin(beta) * Math.cos(gamma)
-  let vectorZ = Math.sin(beta)
+  
 
   if (x > 90) {
     x = 90;
