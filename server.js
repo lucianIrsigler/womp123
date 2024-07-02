@@ -51,7 +51,6 @@ io.on("connection", (socket) => {
     /*if (room && room.host) {
       io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
     }*/
-
       if (room) {
         io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
       }

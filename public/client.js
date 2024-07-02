@@ -153,6 +153,10 @@ function handleOrientation(event) {
 // Add this function to start sending gyroscope data
 function startSendingGyroscopeData() {
   gyroscopeInterval = setInterval(() => {
+
+    let vectorX = Math.sin(data.beta) * Math.cos(data.gamma)
+    let vectorY = Math.sin(data.beta) * Math.cos(data.gamma)
+    let vectorZ = Math.sin(data.beta)
     socket.emit("gyroscopeData", {
       roomCode: currentRoom,
       data: gyroscopeData,
@@ -172,7 +176,6 @@ function stopSendingGyroscopeData() {
 
 // Add a handler for gyroscope data on the host side
 socket.on("gyroscopeUpdate", ({ playerId, data }) => {
-  console.log(playerId,data)
   updateGyroscopeDisplay(playerId, data);
 
 });
@@ -203,9 +206,7 @@ function updateGyroscopeDisplay(playerId, data) {
       data.beta,
       data.gamma)
 
-  let vectorX = Math.sin(data.beta) * Math.cos(data.gamma)
-  let vectorY = Math.sin(data.beta) * Math.cos(data.gamma)
-  let vectorZ = Math.sin(data.beta)
+  
 
       document.getElementById(
         `player-${playerId}-text`
