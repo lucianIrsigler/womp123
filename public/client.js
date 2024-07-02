@@ -90,7 +90,7 @@ socket.on("roomFull", () => {
   }
 });
 
-/*socket.on("gameStarted", () => {
+socket.on("gameStarted", () => {
   lobby.style.display = "none";
   game.style.display = "block";
 
@@ -114,7 +114,7 @@ socket.on("roomFull", () => {
       startSendingGyroscopeData();
     }
   }
-});*/
+});
 
 socket.on("error", (message) => {
   alert(message);
