@@ -203,11 +203,12 @@ function updateGyroscopeDisplay(playerId, data) {
 
     document.getElementById("gyroscope-data").appendChild(newPlayerElement);
     document.getElementById(`player-${playerId}`).appendChild(ball)
-    updateThing(document.getElementById(`player-${playerId}`),
+  }
+
+  updateThing(document.getElementById(`player-${playerId}`),
       document.getElementById(`player-${playerId}-ball`),
       data.beta,
       data.gamma)
-  }
 
   /*document.getElementById(
     `player-${playerId}`
@@ -222,6 +223,7 @@ function updateThing(garden,ball,beta,gamma) {
 
   let x = beta; // In degree in the range [-180,180)
   let y = gamma; // In degree in the range [-90,90)
+
   if (x > 90) {
     x = 90;
   }
@@ -233,7 +235,6 @@ function updateThing(garden,ball,beta,gamma) {
   // x and y to [0,180]
   x += 90;
   y += 90;
-
   ball.style.left = `${(maxY * y) / 180 - 10}px`; // rotating device around the y axis moves the ball horizontally
   ball.style.top = `${(maxX * x) / 180 - 10}px`; // rotating device around the x axis moves the ball vertically
 }
