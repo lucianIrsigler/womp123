@@ -8,6 +8,11 @@ app.use(express.static("public"));
 const rooms = new Map();
 const MAX_PLAYERS = 4;
 
+let res = {
+  "x":0,
+  "y":0
+}
+
 io.on("connection", (socket) => {
   socket.on("createRoom", () => {
     const roomCode = generateRoomCode();
@@ -51,9 +56,13 @@ io.on("connection", (socket) => {
     /*if (room && room.host) {
       io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
     }*/
-   console.log(data)
+
+    res.x = Math.max(res.x,data.x);
+    res.y = Math.max(res.y,data.y);
+
     if (room) {
-      io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
+      //io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
+      io.to(roomCode).emit("updateBall",{playerID: socket.id, data:res})
     }
   });
 
