@@ -2,7 +2,7 @@
   "name": "testing",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "dependencies": {
     "express": "^4.19.2",
     "http": "^0.0.1-security"
