@@ -1,19 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script src="gyro.js" defer></script>
-    <link rel="stylesheet" href="styles.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ball Page</title>
-</head>
-<body id="container">
-    <h1>Welcome to the Ball Page!</h1>
-    <div class="garden">
-        <div class="ball"></div>
-      </div>
-      Hold the device parallel to the ground. Rotate along its x and y axes to see the
-      ball move up/down and left/right respectively.
-      <pre class="output"></pre>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Room</title>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <div id="main-menu">
+      <h1>Welcome to the Game</h1>
+      <button id="create-room">Start a Room</button>
+      <button id="join-room">Join a Room</button>
+    </div>
+
+    <div id="join-form" style="display: none">
+      <input type="text" id="player-name" placeholder="Enter your name" />
+      <input type="text" id="room-code" placeholder="Enter room code" />
+      <button id="submit-join">Join</button>
+    </div>
+
+    <div id="lobby" style="display: none">
+      <h2>Lobby</h2>
+      <p>Room Code: <span id="room-code-display"></span></p>
+      <p id="room-status"></p>
+      <h3>Players:</h3>
+      <ul id="player-list"></ul>
+      <button id="start-game" style="display: none" disabled>Start Game</button>
+    </div>
+
+    <div id="game" style="display: none">
+      <h2>Game Started!</h2>
+      <div id="gyroscope-data"></div>
+    </div>
+
+    <script src="client.js"></script>
   </body>
 </html>
