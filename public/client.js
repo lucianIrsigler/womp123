@@ -183,14 +183,13 @@ function stopSendingGyroscopeData() {
 
 // Add a handler for gyroscope data on the host side
 socket.on("gyroscopeUpdate", ({ playerId, data }) => {
-  console.log(playerId)
+  console.log(playerId,data)
   updateGyroscopeDisplay(playerId, data);
 
 });
 
 // Function to update the gyroscope display on the host screen
 function updateGyroscopeDisplay(playerId, data) {
-  
   const playerElement = document.getElementById(`player-${playerId}`);
 
   if (!playerElement) {
