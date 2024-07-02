@@ -152,27 +152,13 @@ function handleOrientation(event) {
 socket.on("gameStarted", () => {
   lobby.style.display = "none";
   game.style.display = "block";
-
-  if (!isHost) {
-    // Request permission to use the gyroscope on mobile devices
-    if (
-      typeof DeviceOrientationEvent !== "undefined" &&
-      typeof DeviceOrientationEvent.requestPermission === "function"
-    ) {
-      DeviceOrientationEvent.requestPermission()
-        .then((permissionState) => {
-          if (permissionState === "granted") {
-            window.addEventListener("deviceorientation", handleOrientation);
-            startSendingGyroscopeData();
-          }
-        })
-        .catch(console.error);
-    } else {
-      // For devices that don't require permission
-      window.addEventListener("deviceorientation", handleOrientation);
-      startSendingGyroscopeData();
-    }
-  }
+  setInterval(() => {
+    socket.emit("gyroscopeData", {
+      roomCode: currentRoom,
+      data: gyroscopeData,
+    });
+  }, 100);
+  console.log("HERE");
 });
 
 // Add this function to start sending gyroscope data
@@ -183,6 +169,7 @@ function startSendingGyroscopeData() {
       data: gyroscopeData,
     });
   }, 100); // Send data every 100ms
+
 }
 
 // Add this to clean up when the game ends or the user disconnects

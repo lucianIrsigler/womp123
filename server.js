@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
   socket.on("gyroscopeData", ({ roomCode, data }) => {
     const room = rooms.get(roomCode);
     if (room && room.host) {
-      io.to(room.host).emit("gyroscopeUpdate", { playerId: socket.id, data });
+      io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
     }
   });
 
