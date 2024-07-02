@@ -215,12 +215,11 @@ function updateGyroscopeDisplay(playerId, data) {
 
   
 
-      
   document.getElementById(
     `player-${playerId}-text`
-  ).textContent = `Player ${playerId}: Alpha: ${data.alpha.toFixed(
-    2
-  )}, Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
+  ).textContent = `Player ${playerId}:
+  Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
+
 }
 
 function updateThing(garden,ball,beta,gamma) {
