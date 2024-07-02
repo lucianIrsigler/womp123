@@ -153,12 +153,13 @@ function handleOrientation(event) {
 socket.on("gameStarted", () => {
   lobby.style.display = "none";
   game.style.display = "block";
-  setInterval(() => {
+
+  /*setInterval(() => {
     socket.emit("gyroscopeData", {
       roomCode: currentRoom,
       data: gyroscopeData,
     });
-  }, 100);
+  }, 100);*/
 });
 
 // Add this function to start sending gyroscope data
