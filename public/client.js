@@ -183,6 +183,7 @@ function stopSendingGyroscopeData() {
 
 // Add a handler for gyroscope data on the host side
 socket.on("gyroscopeUpdate", ({ playerId, data }) => {
+  console.log(playerId)
   updateGyroscopeDisplay(playerId, data);
 
 });
@@ -193,6 +194,9 @@ function updateGyroscopeDisplay(playerId, data) {
   const playerElement = document.getElementById(`player-${playerId}`);
 
   if (!playerElement) {
+    const text = document.createElement("div");
+    text.id=`player-${playerId}-text`
+
     const newPlayerElement = document.createElement("div");
     newPlayerElement.id = `player-${playerId}`;
     newPlayerElement.classList.add("garden")
@@ -203,6 +207,7 @@ function updateGyroscopeDisplay(playerId, data) {
 
     document.getElementById("gyroscope-data").appendChild(newPlayerElement);
     document.getElementById(`player-${playerId}`).appendChild(ball)
+    document.getElementById(`player-${playerId}`).appendChild(text)
   }
 
   updateThing(document.getElementById(`player-${playerId}`),
@@ -210,11 +215,11 @@ function updateGyroscopeDisplay(playerId, data) {
       data.beta,
       data.gamma)
 
-  /*document.getElementById(
-    `player-${playerId}`
-  ).textContent = `Player ${playerId}: Alpha: ${data.alpha.toFixed(
-    2
-  )}, Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;*/
+      document.getElementById(
+        `player-${playerId}-text`
+      ).textContent = `Player ${playerId}: Alpha: ${data.alpha.toFixed(
+        2
+      )}, Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
 }
 
 function updateThing(garden,ball,beta,gamma) {
