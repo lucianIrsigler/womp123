@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
         socket.join(roomCode);
         io.in(roomCode).emit("playerJoined", { name, room });
         io.to(roomCode).emit("updatePlayerList", room.players);
-        
+
         socket.emit("joinedRoom", { roomCode, isHost: false });
 
         // Check if room is full after joining
@@ -66,11 +66,12 @@ io.on("connection", (socket) => {
   });
 });
 
-
 function generateRoomCode() {
   return Math.random().toString(36).substring(2, 6).toUpperCase();
 }
 
-const port = process.env.PORT || 1337;
+const PORT = process.env.PORT || 1337;
 
-http.listen(port);
+http.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
