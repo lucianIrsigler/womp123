@@ -48,9 +48,13 @@ io.on("connection", (socket) => {
 
   socket.on("gyroscopeData", ({ roomCode, data }) => {
     const room = rooms.get(roomCode);
-    if (room && room.host) {
+    /*if (room && room.host) {
       io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
-    }
+    }*/
+
+      if (room) {
+        io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
+      }
   });
 
   socket.on("disconnect", () => {

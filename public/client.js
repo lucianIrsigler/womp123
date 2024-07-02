@@ -158,7 +158,6 @@ socket.on("gameStarted", () => {
       data: gyroscopeData,
     });
   }, 100);
-  console.log("HERE");
 });
 
 // Add this function to start sending gyroscope data
@@ -182,11 +181,10 @@ function stopSendingGyroscopeData() {
 }
 
 // Add a handler for gyroscope data on the host side
-if (isHost) {
-  socket.on("gyroscopeUpdate", ({ playerId, data }) => {
-    updateGyroscopeDisplay(playerId, data);
-  });
-}
+socket.on("gyroscopeUpdate", ({ playerId, data }) => {
+  updateGyroscopeDisplay(playerId, data);
+  console.log("here")
+});
 
 // Function to update the gyroscope display on the host screen
 function updateGyroscopeDisplay(playerId, data) {
