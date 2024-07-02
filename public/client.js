@@ -70,6 +70,7 @@ socket.on("playerJoined", ({ name, room }) => {
 });
 
 socket.on("updatePlayerList", (players) => {
+  console.log(players);
   updatePlayerList(players);
 });
 
@@ -129,6 +130,7 @@ function updatePlayerList(players) {
 
   if (players.length < 4) {
     roomStatus.textContent = `Waiting for players... (${players.length}/4)`;
+    console.log(players)
     if (isHost && players.length>=1) {
       startGameBtn.disabled = false;
     }
@@ -150,11 +152,7 @@ function handleOrientation(event) {
 
 // Add this function to start sending gyroscope data
 function startSendingGyroscopeData() {
-  setInterval(() => {
-
-    let vectorX = Math.sin(data.beta) * Math.cos(data.gamma)
-    let vectorY = Math.sin(data.beta) * Math.cos(data.gamma)
-    let vectorZ = Math.sin(data.beta)
+  gyroscopeInterval = setInterval(() => {
     socket.emit("gyroscopeData", {
       roomCode: currentRoom,
       data: gyroscopeData,
@@ -174,6 +172,7 @@ function stopSendingGyroscopeData() {
 
 // Add a handler for gyroscope data on the host side
 socket.on("gyroscopeUpdate", ({ playerId, data }) => {
+  console.log(playerId,data)
   updateGyroscopeDisplay(playerId, data);
 
 });
@@ -204,12 +203,12 @@ function updateGyroscopeDisplay(playerId, data) {
       data.beta,
       data.gamma)
 
-  
-
+      
       document.getElementById(
         `player-${playerId}-text`
-      ).textContent = `Player ${playerId}: VectorX: ${vectorY}
-      , VectorY: ${vectorX}, VectorZ: ${vectorZ}`;
+      ).textContent = `Player ${playerId}: Alpha: ${data.alpha.toFixed(
+        2
+      )}, Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
 }
 
 function updateThing(garden,ball,beta,gamma) {
@@ -218,6 +217,9 @@ function updateThing(garden,ball,beta,gamma) {
 
   let x = beta; // In degree in the range [-180,180)
   let y = gamma; // In degree in the range [-90,90)
+  let vectorX = Math.sin(beta) * Math.cos(gamma)
+  let vectorY = Math.sin(beta) * Math.cos(gamma)
+  let vectorZ = Math.sin(beta)
 
   if (x > 90) {
     x = 90;
