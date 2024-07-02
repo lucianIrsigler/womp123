@@ -72,4 +72,5 @@ function generateRoomCode() {
 }
 
 const port = process.env.PORT || 1337;
-server.listen(port);
+
+http.listen(port);
