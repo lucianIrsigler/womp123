@@ -203,11 +203,14 @@ function updateGyroscopeDisplay(playerId, data) {
       data.beta,
       data.gamma)
 
+  let vectorX = Math.sin(data.beta) * Math.cos(data.gamma)
+  let vectorY = Math.sin(data.beta) * Math.cos(data.gamma)
+  let vectorZ = Math.sin(data.beta)
+
       document.getElementById(
         `player-${playerId}-text`
-      ).textContent = `Player ${playerId}: Alpha: ${data.alpha.toFixed(
-        2
-      )}, Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
+      ).textContent = `Player ${playerId}: VectorX: ${vectorY}
+      , VectorY: ${vectorX}, VectorZ: ${vectorZ}`;
 }
 
 function updateThing(garden,ball,beta,gamma) {
