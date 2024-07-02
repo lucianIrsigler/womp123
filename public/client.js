@@ -63,13 +63,14 @@ socket.on("joinedRoom", ({ roomCode, isHost: hostStatus }) => {
   }
 });
 
-socket.on("playerJoined", ({ name }) => {
+socket.on("playerJoined", ({ name, room }) => {
   const li = document.createElement("li");
   li.textContent = name;
   playerList.appendChild(li);
 });
 
 socket.on("updatePlayerList", (players) => {
+  console.log(players);
   updatePlayerList(players);
 });
 

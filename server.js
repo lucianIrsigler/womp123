@@ -24,8 +24,9 @@ io.on("connection", (socket) => {
       } else {
         room.players.push({ id: socket.id, name });
         socket.join(roomCode);
-        socket.to(roomCode).emit("playerJoined", { name });
-        io.to(room.host).emit("updatePlayerList", room.players);
+        io.in(roomCode).emit("playerJoined", { name, room });
+        io.to(roomCode).emit("updatePlayerList", room.players);
+        
         socket.emit("joinedRoom", { roomCode, isHost: false });
 
         // Check if room is full after joining
