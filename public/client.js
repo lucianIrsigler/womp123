@@ -203,7 +203,10 @@ function updateGyroscopeDisplay(playerId, data) {
 
     document.getElementById("gyroscope-data").appendChild(newPlayerElement);
     document.getElementById(`player-${playerId}`).appendChild(ball)
-    updateBall(document.getElementById(`player-${playerId}-ball`),data.beta,data.gamma)
+    updateBall(document.getElementById(`player-${playerId}`),
+      document.getElementById(`player-${playerId}-ball`),
+      data.beta,
+      data.gamma)
   }
 
   /*document.getElementById(
@@ -213,8 +216,10 @@ function updateGyroscopeDisplay(playerId, data) {
   )}, Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;*/
 }
 
+function updateThing(garden,ball,beta,gamma) {
+  const maxX = garden.clientWidth - ball.clientWidth;
+  const maxY = garden.clientHeight - ball.clientHeight;
 
-function updateThing(ball,beta,gamma) {
   let x = beta; // In degree in the range [-180,180)
   let y = gamma; // In degree in the range [-90,90)
   if (x > 90) {
