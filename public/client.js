@@ -70,7 +70,6 @@ socket.on("playerJoined", ({ name, room }) => {
 });
 
 socket.on("updatePlayerList", (players) => {
-  console.log(players);
   updatePlayerList(players);
 });
 
@@ -130,7 +129,6 @@ function updatePlayerList(players) {
 
   if (players.length < 4) {
     roomStatus.textContent = `Waiting for players... (${players.length}/4)`;
-    console.log(players)
     if (isHost && players.length>=1) {
       startGameBtn.disabled = false;
     }
@@ -152,7 +150,7 @@ function handleOrientation(event) {
 
 // Add this function to start sending gyroscope data
 function startSendingGyroscopeData() {
-  gyroscopeInterval = setInterval(() => {
+  setInterval(() => {
 
     let vectorX = Math.sin(data.beta) * Math.cos(data.gamma)
     let vectorY = Math.sin(data.beta) * Math.cos(data.gamma)
