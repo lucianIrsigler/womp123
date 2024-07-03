@@ -128,6 +128,10 @@ startGameBtn.addEventListener("click", () => {
     }
   }
 });
+socket.on("receieveMap",(maze)=>{
+  console.log(maze)
+  console.log("MONEY BABY")
+})
 
 socket.on("roomCreated", (roomCode) => {
   currentRoom = roomCode;
@@ -154,6 +158,7 @@ socket.on("playerJoined", ({ name, room }) => {
   const li = document.createElement("li");
   li.textContent = name;
   playerList.appendChild(li);
+
 });
 
 socket.on("updatePlayerList", (players) => {
@@ -176,7 +181,7 @@ socket.on("roomFull", () => {
   }
 });
 
-socket.on("gameStarted", () => {
+socket.on("gameStarted", (room) => {
   lobby.style.display = "none";
   gameStartTitle.style.display = "block";
   game.style.display = "flex";
@@ -202,6 +207,8 @@ socket.on("gameStarted", () => {
       window.addEventListener("deviceorientation", handleOrientation);
       startSendingGyroscopeData();
     }
+
+
   }
 });
 
@@ -265,6 +272,8 @@ socket.on("gyroscopeUpdate", ({ playerId, data, room }) => {
 
 // Function to update the gyroscope display on the host screen
 function updateGyroscopeDisplay(playerId, data, room) {
+  document.body.style.backgroundColor =
+    softColors[room.players.findIndex((player) => player.id === socket.id)];
   const playerElement = document.getElementById(`player-${playerId}`);
 
   if (!playerElement) {
@@ -318,3 +327,4 @@ function updateThing(garden, ball, beta, gamma) {
   ball.style.left = `${(maxY * y) / 180 - 10}px`; // rotating device around the y axis moves the ball horizontally
   ball.style.top = `${(maxX * x) / 180 - 10}px`; // rotating device around the x axis moves the ball vertically
 }
+
