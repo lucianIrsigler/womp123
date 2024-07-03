@@ -60,7 +60,7 @@ io.on("connection", (socket) => {
     const room = rooms.get(roomCode);
 
     if (room) {
-      //io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
+      io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
       io.to(roomCode).emit("updateBall",{playerID: socket.id, data:data})
     }
   });
