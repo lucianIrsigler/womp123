@@ -1,18 +1,3 @@
-if (typeof DeviceMotionEvent.requestPermission === 'function') {
-  DeviceOrientationEvent.requestPermission()
-  .then(response => {
-    if (response == 'granted') {
-      window.addEventListener('deviceorientation', (e) => {
-        // do something with e
-      })
-    }
-  })
-  .catch(console.error)
-} else {
-  console.log("okie")
-}
-
-
 const ball = document.querySelector(".ball");
 const garden = document.querySelector(".garden");
 const output = document.querySelector(".output");

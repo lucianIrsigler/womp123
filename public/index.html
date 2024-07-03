@@ -24,7 +24,8 @@
         border-radius: 100%;
       }
     </style>
-  </head>
+  <link rel="stylesheet" href="grid.css">  </head>
+
   <body>
     <div id="main-menu">
       <h1>Welcome to the Game</h1>
@@ -49,11 +50,19 @@
     </div>
 
     <div id="game" style="display: none">
+
       <h2>Game Started!</h2>
+      <div id="center">
+        <div id="game">
+          <div id="maze">
+            <div id="end"></div>
+          </div>
+        </div>
+      </div>
       <div id="gyroscope-data"></div>
     </div>
 
     <script src="client.js"></script>
-    <script src="controller.js"></script>
+    <script src="ball.js" defer></script>
   </body>
 </html>
