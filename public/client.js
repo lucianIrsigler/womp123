@@ -129,13 +129,6 @@ startGameBtn.addEventListener("click", () => {
     }
   }
 });
-
-
-socket.on("receieveMap",(maze)=>{
-  console.log(maze)
-  console.log("MONEY BABY")
-})
-
 socket.on("roomCreated", (roomCode) => {
   currentRoom = roomCode;
   isHost = true;
@@ -157,7 +150,7 @@ socket.on("joinedRoom", ({ roomCode, isHost: hostStatus }) => {
   }
 });
 
-socket.on("playerJoined", ({ name, room }) => {
+socket.on("playerJoined", ({ name,room }) => {
   const li = document.createElement("li");
   li.textContent = name;
   playerList.appendChild(li);
@@ -266,13 +259,16 @@ function stopSendingGyroscopeData() {
 }
 
 // Add a handler for gyroscope data on the host side
-socket.on("gyroscopeUpdate", ({ playerId, data }) => {
-  updateGyroscopeDisplay(playerId, data);
+socket.on("gyroscopeUpdate", ({ playerInfo, data }) => {
+  updateGyroscopeDisplay(playerInfo, data);
 
 });
 
 // Function to update the gyroscope display on the host screen
-function updateGyroscopeDisplay(playerId, data) {
+function updateGyroscopeDisplay(playerInfo, data) {
+  const playerId = playerInfo.id
+  const name = playerInfo.name
+
   const playerElement = document.getElementById(`player-${playerId}`);
 
   if (!playerElement) {
@@ -298,10 +294,10 @@ function updateGyroscopeDisplay(playerId, data) {
       data.gamma)
 
   
-
+  
   document.getElementById(
     `player-${playerId}-text`
-  ).textContent = `Player ${playerId}:
+  ).textContent = `Player ${name}:
   Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
 
 }
