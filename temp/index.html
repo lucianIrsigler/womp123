@@ -6,6 +6,7 @@
     <title>Game Room</title>
     <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="lobby.css"/>
+
     <style>
       .garden {
         position: relative;
@@ -36,13 +37,21 @@
       <button id="join-room" href="player.html">Join a Room</button>
     </div>
 
-    <button class="back-button" onclick="location.href='homepage.html'">Back</button>
+    <button class="back-button" onclick="">Back</button>
+
+    <div class="content" id="logoStuff">
+      <img src="maze-icon.png" alt="Maze Icon" class="image">
+      <p>Welcome to the Maze Game!</p>
+      <p>Get ready to navigate through challenging mazes and reach the finish line!</p>
+    </div>
+
 
     <div id="join-form" style="display: none">
       <input type="text" id="player-name" placeholder="Enter your name" />
       <input type="text" id="room-code" placeholder="Enter room code" />
       <button id="submit-join">Join</button>
     </div>
+    
 
     <div id="lobby" style="display: none">
       <h2>Lobby</h2>
@@ -50,6 +59,9 @@
       <p id="room-status"></p>
       <h3>Players:</h3>
       <ul id="player-list"></ul>
+
+      
+
       <!--CHANGED-->
       <div class="custom-select">
         <select id="diffSelect">

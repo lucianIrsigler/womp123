@@ -1,11 +1,7 @@
-"use strict";
-
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
-
-let colors = ["#red", "#green", "#blue"]
 
 app.use(express.static("public"));
 
@@ -32,11 +28,10 @@ io.on("connection", (socket) => {
       if (room.players.length >= MAX_PLAYERS) {
         socket.emit("error", "Room is full");
       } else {
-        room.players.push({ id: socket.id, name:name, pid: room.players.length });
+        room.players.push({ id: socket.id, name });
         socket.join(roomCode);
         io.in(roomCode).emit("playerJoined", { name, room });
         io.to(roomCode).emit("updatePlayerList", room.players);
-        console.log(room.players)
 
         socket.emit("joinedRoom", { roomCode, isHost: false });
 
@@ -58,8 +53,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("transmitMap", ({map,roomCode}) => {
-    const room = rooms.get(roomCode);
-    io.to(roomCode).emit("receieveMap",{map,room});
+    io.to(roomCode).emit("receieveMap",map);
   });
 
 
@@ -74,21 +68,20 @@ io.on("connection", (socket) => {
       gryoscopeGlobalData[socket.id]=data
     }
 
-    if (room) {
-      Object.keys(gryoscopeGlobalData).forEach(key => {
-        let data1 = gryoscopeGlobalData[key]
-        res.gamma+=data1.gamma;
-        res.beta+=data1.beta;
-      });
+    Object.keys(gryoscopeGlobalData).forEach(key => {
+      data = gryoscopeGlobalData[key]
+      res.gamma+=data.gamma;
+      res.beta+=data.beta;
+    });
 
+    if (room!==undefined){
       res.gamma = res.gamma/room.players.length;
       res.beta = res.beta/room.players.length;
+    }
 
-      const playerIndex = room.players.findIndex((p) => p.id === socket.id);
-      const playerInfo = room.players[playerIndex];
-
-      io.to(roomCode).emit("gyroscopeUpdate", { playerInfo, data, room});
-      io.in(roomCode).emit("updateBall",{data:res,host:room.host==socket.id})
+    if (room) {
+      io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
+      io.to(roomCode).emit("updateBall",{playerID: socket.id, data:res})
     }
   });
 
