@@ -213,7 +213,6 @@ function updateThing(garden,ball,beta,gamma) {
   let x = beta; // In degree in the range [-180,180)
   let y = gamma; // In degree in the range [-90,90)
   
-
   if (x > 90) {
     x = 90;
   }
