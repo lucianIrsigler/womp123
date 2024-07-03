@@ -11,7 +11,7 @@ const rooms = new Map();
 const MAX_PLAYERS = 4;
 let gryoscopeGlobalData = {};
 
-let resultant = {
+let prevRes = {
   gamma: 0,
   beta: 0,
 };
@@ -81,6 +81,18 @@ io.on("connection", (socket) => {
         res.beta += data1.beta;
       });
 
+      if (prevRes.gamma+res.gamma>360){
+        res.gamma-=360;
+      }
+
+      if (prevRes.beta+res.beta>360){
+        res.beta-=360
+      }
+
+      res.gamma = res.gamma+prevRes.gamma;
+      res.beta = res.beta+prevRes.beta;
+
+
       res.gamma = res.gamma / room.players.length;
       res.beta = res.beta / room.players.length;
 
@@ -93,6 +105,8 @@ io.on("connection", (socket) => {
         data: res,
         host: room.host == socket.id,
       });
+
+      prevRes = res;
     }
   });
 
