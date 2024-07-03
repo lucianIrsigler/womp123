@@ -527,7 +527,6 @@ function main(timestamp) {
             gameInProgress = false;
             var audio = new Audio('audio/downer_noise.mp3');
             audio.play();
-
             //resetGame();
           }
         });
