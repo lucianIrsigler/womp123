@@ -82,20 +82,15 @@ io.on("connection", (socket) => {
       });
 
         
-      if (prevRes.gamma+res.gamma>360){
-        res.gamma-=360;
-      }
-
       if (prevRes.beta+res.beta>360){
         res.beta-=360
       }
 
-      res.gamma = res.gamma+prevRes.gamma;
-      res.beta = res.beta+prevRes.beta;
+      res.gamma = Math.max(Math.abs(res.gamma),Math.abs(prevRes.gamma))
+      res.beta = Math.max(Math.abs(res.beta),Math.abs(prevRes.beta));
 
-
-      res.gamma = res.gamma / room.players.length;
-      res.beta = res.beta / room.players.length;
+      //res.gamma = res.gamma / room.players.length;
+      //res.beta = res.beta / room.players.length;
 
       io.to(roomCode).emit("gyroscopeUpdate", {
         playerId: socket.id,

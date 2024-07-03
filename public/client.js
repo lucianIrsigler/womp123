@@ -259,7 +259,7 @@ function startSendingGyroscopeData() {
         roomCode: currentRoom,
         data: gyroscopeData,
       });
-    }, 100); // Send data every 100ms
+    }, 200); // Send data every 100ms
   }
 }
 
