@@ -103,6 +103,9 @@ let balls = [];
 let ballElements = [];
 let holeElements = [];
 
+socket_to_ball = {}
+
+
 // Wall metadata
 let mapData, walls, holes;
 
@@ -153,7 +156,12 @@ socket.on("receieveMap", ({ map, room }) => {
     ball.id = `ball-${id}`;
     mazeElement.appendChild(ball);
     ballElements.push(ball);
+
+    const name = room.players[index].name;
+    
+    socket_to_ball[index] = name
   });
+
 });
 
 socket.on("updateBall", ({ data, host }) => {
@@ -276,7 +284,8 @@ function resetGame(room) {
 
 function main(timestamp) {
   // It is possible to reset the game mid-game. This case the look should stop
-
+  
+  
   if (!gameInProgress) return;
 
   if (previousTimestamp === undefined) {
@@ -298,6 +307,8 @@ function main(timestamp) {
       const velocityChangeY = accelerationY * timeElapsed;
       const frictionDeltaX = frictionX * timeElapsed;
       const frictionDeltaY = frictionY * timeElapsed;
+
+      let index = 0
 
       balls.forEach((ball) => {
         if (velocityChangeX == 0) {
@@ -519,22 +530,21 @@ function main(timestamp) {
             }
           }
         });
-
+        
         holes.forEach((hole, hi) => {
           const distance = distance2D(hole, {
             x: ball.nextX,
             y: ball.nextY,
           });
-
           if (distance <= holeSize / 2) {
             // The ball fell into a hole
             holeElements[hi].style.backgroundColor = "green";
-            alert(`Game over - Won game`);
             gameInProgress = false;
-            resetGame();
+            document.getElementById("game-start-title").textContent = "Winner:"+socket_to_ball[index];
+            //resetGame();
+            throw Error("Game over")
           }
         });
-
         // Adjust ball metadata
         ball.x = ball.x + ball.velocityX;
         ball.y = ball.y + ball.velocityY;
@@ -546,36 +556,13 @@ function main(timestamp) {
           index
         ].style.cssText = `left: ${x}px; top: ${y}px; background-color: ${colors[index]}`;
       });
-    }
 
-    // Win detection
-    if (
-      balls.every(
-        (ball) => distance2D(ball, { x: 350 / 2, y: 315 / 2 }) < 65 / 2
-      )
-    ) {
-      noteElement.innerHTML = `Congrats, you did it!
-          ${!hardMode ? "<p>Press H for hard mode</p>" : ""}
-          <p>
-            Follow me
-            <a href="https://twitter.com/HunorBorbely" , target="_top"
-              >@HunorBorbely</a
-            >
-          </p>`;
-      noteElement.style.opacity = 1;
-      gameInProgress = false;
-    } else {
-      previousTimestamp = timestamp;
-      window.requestAnimationFrame(main);
+      index++;
     }
   } catch (error) {
-    if (error.message == "The ball fell into a hole") {
-      noteElement.innerHTML = `A ball fell into a black hole! Press space to reset the game.
-          <p>
-            Back to easy? Press E
-          </p>`;
-      noteElement.style.opacity = 1;
-      gameInProgress = false;
+    if (error.message == "Game over") {
+        var audio = new Audio("audio/downer_noise.mp3")
+        audio.play()
     } else throw error;
   }
 }
