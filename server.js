@@ -5,11 +5,18 @@ const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 
+let colors = ["#red", "#green", "#blue"]
+
 app.use(express.static("public"));
 
 const rooms = new Map();
 const MAX_PLAYERS = 4;
 let gryoscopeGlobalData = {}
+
+let resultant = {
+  gamma:0,
+  beta:0
+}
 
 io.on("connection", (socket) => {
   socket.on("createRoom", () => {
@@ -25,13 +32,13 @@ io.on("connection", (socket) => {
       if (room.players.length >= MAX_PLAYERS) {
         socket.emit("error", "Room is full");
       } else {
-        room.players.push({ id: socket.id, name });
+        room.players.push({ id: socket.id, name:name, pid: room.players.length });
         socket.join(roomCode);
-
         io.in(roomCode).emit("playerJoined", { name, room });
         io.to(roomCode).emit("updatePlayerList", room.players);
+        console.log(room.players)
 
-        socket.emit("joinedRoom", {roomCode, isHost: false });
+        socket.emit("joinedRoom", { roomCode, isHost: false });
 
         // Check if room is full after joining
         if (room.players.length === MAX_PLAYERS) {
@@ -77,9 +84,10 @@ io.on("connection", (socket) => {
       res.gamma = res.gamma/room.players.length;
       res.beta = res.beta/room.players.length;
 
-      let playerInfo = room.players[room.players.findIndex((p) => p.id === socket.id)]
+      const playerIndex = room.players.findIndex((p) => p.id === socket.id);
+      const playerInfo = room.players[playerIndex];
 
-      io.to(roomCode).emit("gyroscopeUpdate", { playerInfo, data});
+      io.to(roomCode).emit("gyroscopeUpdate", { playerInfo, data, room});
       io.in(roomCode).emit("updateBall",{data:res,host:room.host==socket.id})
     }
   });

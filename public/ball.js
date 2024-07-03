@@ -179,8 +179,13 @@ socket.on("updateBall", ({ data, host }) => {
   mazeElement.style.cssText = `
           transform: rotateY(${rotationY}deg) rotateX(${-rotationX}deg)
         `;
+<<<<<<< HEAD
   // }
 
+=======
+  }
+  /*
+>>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
   const playerElement = document.getElementById(`player-res`);
   if (!playerElement) {
     const text = document.createElement("div");
@@ -199,6 +204,7 @@ socket.on("updateBall", ({ data, host }) => {
     document.getElementById(`player-res`).appendChild(text);
   }
 
+<<<<<<< HEAD
   updateThing(
     document.getElementById(`player-res`),
     document.getElementById(`player-res-ball`),
@@ -206,6 +212,12 @@ socket.on("updateBall", ({ data, host }) => {
     data.gamma
   );
 });
+=======
+  updateThing(document.getElementById(`player-res`),
+      document.getElementById(`player-res-ball`),
+      data.beta,
+      data.gamma)*/
+>>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
 
 function updateThing(garden, ball, beta, gamma) {
   const maxX = garden.clientWidth - ball.clientWidth;
@@ -213,7 +225,11 @@ function updateThing(garden, ball, beta, gamma) {
 
   let x = beta; // In degree in the range [-180,180)
   let y = gamma; // In degree in the range [-90,90)
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
   if (x > 90) {
     x = 90;
   }
