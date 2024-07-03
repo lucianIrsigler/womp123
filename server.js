@@ -8,11 +8,7 @@ app.use(express.static("public"));
 const rooms = new Map();
 const MAX_PLAYERS = 4;
 let gryoscopeGlobalData = {}
-
-let resultant = {
-  gamma:0,
-  beta:0
-}
+let res = {gamma:0,beta:0}
 
 io.on("connection", (socket) => {
   socket.on("createRoom", () => {
@@ -66,20 +62,15 @@ io.on("connection", (socket) => {
       gryoscopeGlobalData[socket.id]=data
     }
 
-    let res = {gamma:0,beta:0}
     Object.keys(gryoscopeGlobalData).forEach(key => {
       data = gryoscopeGlobalData[key]
       res.gamma+=data.gamma;
       res.beta+=data.beta;
+
     });
-
-    if (room!==undefined){
-      res = res / room.players.length;
-    }
-
-    //console.log(res)
-
+    
     if (room) {
+      res.gamma = res.gamma/room.players.length;
       io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
       io.to(roomCode).emit("updateBall",{playerID: socket.id, data:res})
     }
