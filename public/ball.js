@@ -102,31 +102,11 @@ let balls = [];
 let ballElements = [];
 let holeElements = [];
 
-<<<<<<< HEAD
-=======
-resetGame();
-
-// Draw balls for the first time
-balls.forEach(({ x, y }) => {
-  const ball = document.createElement("div");
-  ball.setAttribute("class", "ball");
-  ball.style.cssText = `left: ${x}px; top: ${y}px; `;
-
-  mazeElement.appendChild(ball);
-  ballElements.push(ball);
-});
-
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
 // Wall metadata
 let mapData, walls, holes;
 
-<<<<<<< HEAD
 socket.on("receieveMap", ({ map, room }) => {
   mazeData = map;
-=======
-socket.on("receieveMap",(maze)=>{
-  mazeData = maze;
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
 
   walls = mazeData.map((wall) => ({
     x: wall.column * (pathW + wallW),
@@ -158,7 +138,6 @@ socket.on("receieveMap",(maze)=>{
   holes.forEach(({ x, y }) => {
     const ball = document.createElement("div");
     ball.setAttribute("class", "black-hole");
-<<<<<<< HEAD
     ball.style.cssText = `left: ${x}px; top: ${y}px;`;
     mazeElement.appendChild(ball);
     holeElements.push(ball);
@@ -179,23 +158,14 @@ socket.on("receieveMap",(maze)=>{
 socket.on("updateBall", ({ data, host }) => {
   if (data === null) {
     console.log("no data");
-=======
-    ball.style.cssText = `left: ${x}px; top: ${y}px; `;
-  
-    mazeElement.appendChild(ball);
-    holeElements.push(ball);
-  });
-})
-
-socket.on("updateBall",({playerID,data})=>{
-  if (data===null){
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
     return;
   }
   if (!gameInProgress) {
     gameInProgress = true;
     window.requestAnimationFrame(main);
   }
+
+  //console.log(host)
   const rotationY = Math.minmax(data.gamma, 12); // Left to right tilt
   const rotationX = Math.minmax(data.beta, 12); // Front to back tilt
   const gravity = 1;
@@ -205,18 +175,12 @@ socket.on("updateBall",({playerID,data})=>{
   frictionX = gravity * Math.cos((rotationY / 180) * Math.PI) * friction;
   frictionY = gravity * Math.cos((rotationX / 180) * Math.PI) * friction;
 
-<<<<<<< HEAD
   // if (host) {
   mazeElement.style.cssText = `
           transform: rotateY(${rotationY}deg) rotateX(${-rotationX}deg)
         `;
-<<<<<<< HEAD
   // }
 
-=======
-  }
-  /*
->>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
   const playerElement = document.getElementById(`player-res`);
   if (!playerElement) {
     const text = document.createElement("div");
@@ -235,7 +199,6 @@ socket.on("updateBall",({playerID,data})=>{
     document.getElementById(`player-res`).appendChild(text);
   }
 
-<<<<<<< HEAD
   updateThing(
     document.getElementById(`player-res`),
     document.getElementById(`player-res-ball`),
@@ -243,12 +206,6 @@ socket.on("updateBall",({playerID,data})=>{
     data.gamma
   );
 });
-=======
-  updateThing(document.getElementById(`player-res`),
-      document.getElementById(`player-res-ball`),
-      data.beta,
-      data.gamma)*/
->>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
 
 function updateThing(garden, ball, beta, gamma) {
   const maxX = garden.clientWidth - ball.clientWidth;
@@ -256,11 +213,7 @@ function updateThing(garden, ball, beta, gamma) {
 
   let x = beta; // In degree in the range [-180,180)
   let y = gamma; // In degree in the range [-90,90)
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
   if (x > 90) {
     x = 90;
   }
@@ -277,11 +230,6 @@ function updateThing(garden, ball, beta, gamma) {
 }
 
 function resetGame(room) {
-=======
-})
-
-function resetGame() {
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
   previousTimestamp = undefined;
   gameInProgress = false;
   mouseStartX = undefined;
@@ -295,7 +243,6 @@ function resetGame() {
         transform: rotateY(0deg) rotateX(0deg)
       `;
 
-<<<<<<< HEAD
   constantBalls = [
     { column: 0, row: 0 },
     { column: 0, row: 9 },
@@ -310,14 +257,6 @@ function resetGame() {
   }
 
   balls = playerBalls.map((ball) => ({
-=======
-  balls = [
-    { column: 0, row: 0 },
-    { column: 9, row: 0 },
-    { column: 0, row: 8 },
-    { column: 9, row: 8 },
-  ].map((ball) => ({
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
     x: ball.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
     y: ball.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
     velocityX: 0,
@@ -326,7 +265,6 @@ function resetGame() {
 
   if (ballElements.length) {
     balls.forEach(({ x, y }, index) => {
-<<<<<<< HEAD
       ballElements[
         index
       ].style.cssText = `left: ${x}px; top: ${y}px; background-color: ${colors[index]}`;
@@ -335,19 +273,6 @@ function resetGame() {
   }
 }
 
-=======
-      ballElements[index].style.cssText = `left: ${x}px; top: ${y}px; `;
-    });
-  }
-
-  // Remove previous hole elements
-  holeElements.forEach((holeElement) => {
-    mazeElement.removeChild(holeElement);
-  });
-  holeElements = [];
-}
-
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
 function main(timestamp) {
   // It is possible to reset the game mid-game. This case the look should stop
 

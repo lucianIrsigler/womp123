@@ -20,14 +20,6 @@ let isHost = false;
 let gyroscopeInterval = null;
 const gyroscopeData = { alpha: 0, beta: 0, gamma: 0 };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-let colors = ["#FF0000", "#00ff00"]
-
->>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
-=======
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
 let numRows = 10;
 let numCols = 10;
 
@@ -137,18 +129,6 @@ startGameBtn.addEventListener("click", () => {
   }
 });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-socket.on("receieveMap",(maze)=>{
-  console.log(maze)
-  console.log("MONEY BABY")
-})
-
->>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
-=======
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
 socket.on("roomCreated", (roomCode) => {
   currentRoom = roomCode;
   isHost = true;
@@ -170,7 +150,7 @@ socket.on("joinedRoom", ({ roomCode, host: hostStatus }) => {
   }
 });
 
-socket.on("playerJoined", ({ name,room }) => {
+socket.on("playerJoined", ({ name, room }) => {
   const li = document.createElement("li");
   li.textContent = name;
   playerList.appendChild(li);
@@ -279,34 +259,12 @@ function stopSendingGyroscopeData() {
 }
 
 // Add a handler for gyroscope data on the host side
-<<<<<<< HEAD
-<<<<<<< HEAD
 socket.on("gyroscopeUpdate", ({ playerId, data, room }) => {
   updateGyroscopeDisplay(playerId, data, room);
-=======
-socket.on("gyroscopeUpdate", ({ playerId, data, room}) => {
-  updateGyroscopeDisplay(playerId, data, room);
-
->>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
-=======
-socket.on("gyroscopeUpdate", ({ playerId, data, room }) => {
-  updateGyroscopeDisplay(playerId, data, room);
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
 });
 
 // Function to update the gyroscope display on the host screen
-function updateGyroscopeDisplay(playerInfo, data) {
-  const playerId = playerInfo.id
-  const name = playerInfo.name
-
 function updateGyroscopeDisplay(playerId, data, room) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-  /*
->>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
-=======
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
   const playerElement = document.getElementById(`player-${playerId}`);
 
   if (!playerElement) {
@@ -319,21 +277,7 @@ function updateGyroscopeDisplay(playerId, data, room) {
 
     const ball = document.createElement("div");
     ball.id = `player-${playerId}-ball`;
-<<<<<<< HEAD
-<<<<<<< HEAD
     ball.classList.add("ball");
-=======
-    ball.style.backgroundColor = colors[room.players.findIndex(player=> player.id === playerId)]
-    // ball.style.cssText = `background-color: ${colors[room.players.findIndex(player=> player.id === playerId)]};`;
-    // ball.style.cssText = `background-color: ${colors[room.players.findIndex(player=> player.id === playerId)]};`;
-    ball.style.color = "yellow";
-
-    console.log(ball, colors[room.players.findIndex(player=> player.id === playerId)])
-    // ball.classList.add("ball")
->>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
-=======
-    ball.classList.add("ball");
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
 
     document.getElementById("gyroscope-data").appendChild(newPlayerElement);
     document.getElementById(`player-${playerId}`).appendChild(ball);
@@ -346,151 +290,13 @@ function updateGyroscopeDisplay(playerId, data, room) {
     data.beta,
     data.gamma
   );
-<<<<<<< HEAD
 
-<<<<<<< HEAD
   document.getElementById(
     `player-${playerId}-text`
   ).textContent = `Player ${playerId}:
   Beta: ${data.beta}, Gamma: ${data.gamma}`;
 }
-("use strict");
-=======
-  
-=======
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
 
-  document.getElementById(
-    `player-${playerId}-text`
-  ).textContent = `Player ${playerId}:
-<<<<<<< HEAD
-  Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;*/
->>>>>>> 22fde4a1085b98927b7505c0577199d21423e70e
-
-const express = require("express");
-const app = express();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
-
-app.use(express.static("public"));
-
-const rooms = new Map();
-const MAX_PLAYERS = 4;
-let gryoscopeGlobalData = {};
-
-let resultant = {
-  gamma: 0,
-  beta: 0,
-};
-
-io.on("connection", (socket) => {
-  socket.on("createRoom", () => {
-    const roomCode = generateRoomCode();
-    rooms.set(roomCode, { host: socket.id, players: [] });
-    socket.join(roomCode);
-    socket.emit("roomCreated", roomCode);
-  });
-
-  socket.on("joinRoom", ({ name, roomCode }) => {
-    const room = rooms.get(roomCode);
-    if (room) {
-      if (room.players.length >= MAX_PLAYERS) {
-        socket.emit("error", "Room is full");
-      } else {
-        room.players.push({
-          id: socket.id,
-          name: name,
-          pid: room.players.length,
-        });
-        socket.join(roomCode);
-        io.in(roomCode).emit("playerJoined", { name, room });
-        io.to(roomCode).emit("updatePlayerList", room.players);
-        console.log(room.players);
-
-        socket.emit("joinedRoom", { roomCode, host: false });
-
-        // Check if room is full after joining
-        if (room.players.length === MAX_PLAYERS) {
-          io.to(roomCode).emit("roomFull");
-        }
-      }
-    } else {
-      socket.emit("error", "Room not found");
-    }
-  });
-
-  socket.on("startGame", (roomCode) => {
-    const room = rooms.get(roomCode);
-    if (room && room.host === socket.id) {
-      io.to(roomCode).emit("gameStarted");
-    }
-  });
-
-  socket.on("transmitMap", ({ map, roomCode }) => {
-    const room = rooms.get(roomCode);
-    io.to(roomCode).emit("receieveMap", { map, room });
-  });
-
-  socket.on("gyroscopeData", ({ roomCode, data }) => {
-    let res = { gamma: 0, beta: 0 };
-    const room = rooms.get(roomCode);
-
-    if (gryoscopeGlobalData[socket.id] !== undefined) {
-      gryoscopeGlobalData[socket.id] = data;
-    } else {
-      gryoscopeGlobalData[socket.id] = data;
-    }
-
-    if (room) {
-      Object.keys(gryoscopeGlobalData).forEach((key) => {
-        let data1 = gryoscopeGlobalData[key];
-        res.gamma += data1.gamma;
-        res.beta += data1.beta;
-      });
-
-      res.gamma = res.gamma / room.players.length;
-      res.beta = res.beta / room.players.length;
-
-      io.to(roomCode).emit("gyroscopeUpdate", {
-        playerId: socket.id,
-        data: data,
-        room: room,
-      });
-      io.in(roomCode).emit("updateBall", {
-        data: res,
-        host: room.host == socket.id,
-      });
-    }
-  });
-
-  socket.on("disconnect", () => {
-    rooms.forEach((room, roomCode) => {
-      const playerIndex = room.players.findIndex((p) => p.id === socket.id);
-      if (playerIndex !== -1) {
-        const player = room.players[playerIndex];
-        room.players.splice(playerIndex, 1);
-        socket.to(roomCode).emit("playerLeft", { name: player.name });
-        io.to(room.host).emit("updatePlayerList", room.players);
-      }
-    });
-  });
-});
-
-function generateRoomCode() {
-  return Math.random().toString(36).substring(2, 6).toUpperCase();
-}
-
-const PORT = process.env.PORT || 1337;
-
-http.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-=======
-  Beta: ${data.beta}, Gamma: ${data.gamma}`;
-}
-
->>>>>>> ec538ee30650e32087c2192bdd355dacbf34e6b6
 function updateThing(garden, ball, beta, gamma) {
   const maxX = garden.clientWidth - ball.clientWidth;
   const maxY = garden.clientHeight - ball.clientHeight;

@@ -1,3 +1,5 @@
+"use strict";
+
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
@@ -7,12 +9,12 @@ app.use(express.static("public"));
 
 const rooms = new Map();
 const MAX_PLAYERS = 4;
-let gryoscopeGlobalData = {}
+let gryoscopeGlobalData = {};
 
 let resultant = {
-  gamma:0,
-  beta:0
-}
+  gamma: 0,
+  beta: 0,
+};
 
 io.on("connection", (socket) => {
   socket.on("createRoom", () => {
@@ -28,12 +30,17 @@ io.on("connection", (socket) => {
       if (room.players.length >= MAX_PLAYERS) {
         socket.emit("error", "Room is full");
       } else {
-        room.players.push({ id: socket.id, name });
+        room.players.push({
+          id: socket.id,
+          name: name,
+          pid: room.players.length,
+        });
         socket.join(roomCode);
         io.in(roomCode).emit("playerJoined", { name, room });
         io.to(roomCode).emit("updatePlayerList", room.players);
+        console.log(room.players);
 
-        socket.emit("joinedRoom", { roomCode, isHost: false });
+        socket.emit("joinedRoom", { roomCode, host: false });
 
         // Check if room is full after joining
         if (room.players.length === MAX_PLAYERS) {
@@ -52,36 +59,40 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("transmitMap", ({map,roomCode}) => {
-    io.to(roomCode).emit("receieveMap",map);
+  socket.on("transmitMap", ({ map, roomCode }) => {
+    const room = rooms.get(roomCode);
+    io.to(roomCode).emit("receieveMap", { map, room });
   });
 
-
   socket.on("gyroscopeData", ({ roomCode, data }) => {
-    let res = {gamma:0,beta:0}
+    let res = { gamma: 0, beta: 0 };
     const room = rooms.get(roomCode);
 
-    if (gryoscopeGlobalData[socket.id]!==undefined){
-      gryoscopeGlobalData[socket.id]=data
-
-    }else{
-      gryoscopeGlobalData[socket.id]=data
-    }
-
-    Object.keys(gryoscopeGlobalData).forEach(key => {
-      data = gryoscopeGlobalData[key]
-      res.gamma+=data.gamma;
-      res.beta+=data.beta;
-    });
-
-    if (room!==undefined){
-      res.gamma = res.gamma/room.players.length;
-      res.beta = res.beta/room.players.length;
+    if (gryoscopeGlobalData[socket.id] !== undefined) {
+      gryoscopeGlobalData[socket.id] = data;
+    } else {
+      gryoscopeGlobalData[socket.id] = data;
     }
 
     if (room) {
-      io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
-      io.to(roomCode).emit("updateBall",{playerID: socket.id, data:res})
+      Object.keys(gryoscopeGlobalData).forEach((key) => {
+        let data1 = gryoscopeGlobalData[key];
+        res.gamma += data1.gamma;
+        res.beta += data1.beta;
+      });
+
+      res.gamma = res.gamma / room.players.length;
+      res.beta = res.beta / room.players.length;
+
+      io.to(roomCode).emit("gyroscopeUpdate", {
+        playerId: socket.id,
+        data: data,
+        room: room,
+      });
+      io.in(roomCode).emit("updateBall", {
+        data: res,
+        host: room.host == socket.id,
+      });
     }
   });
 
