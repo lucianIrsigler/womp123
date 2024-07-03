@@ -59,14 +59,25 @@ io.on("connection", (socket) => {
 
   socket.on("gyroscopeData", ({ roomCode, data }) => {
     const room = rooms.get(roomCode);
-    gryoscopeGlobalData[socket.id] = data;
-    let res = {gamma:0,beta:0}
-    for (var data of gryoscopeGlobalData) {
-      res.gamma+=data.gamma;
-      res.beta+=data.beta;
+
+    if (gryoscopeGlobalData[socket.id]!==undefined){
+      gryoscopeGlobalData[socket.id]=data
+    }else{
+      gryoscopeGlobalData[socket.id]=data
     }
 
-    res = res / room.players.length;
+    let res = {gamma:0,beta:0}
+    Object.keys(gryoscopeGlobalData).forEach(key => {
+      data = gryoscopeGlobalData[key]
+      res.gamma+=data.gamma;
+      res.beta+=data.beta;
+    });
+
+    if (room!==undefined){
+      res = res / room.players.length;
+    }
+
+    //console.log(res)
 
     if (room) {
       io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });

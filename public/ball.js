@@ -156,7 +156,9 @@ socket.on("receieveMap",(maze)=>{
 })
 
 socket.on("updateBall",({playerID,data})=>{
-
+  if (data===null){
+    return;
+  }
   if (!gameInProgress){
     gameInProgress=true
     window.requestAnimationFrame(main)
