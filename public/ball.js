@@ -568,6 +568,9 @@ function main(timestamp) {
       });
 
       index++;
+      previousTimestamp = timestamp;
+      window.requestAnimationFrame(main);
+      
     }
   } catch (error) {
     if (error.message == "Game over") {
