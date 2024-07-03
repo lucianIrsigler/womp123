@@ -19,6 +19,7 @@ let isHost = false;
 let gyroscopeInterval = null;
 const gyroscopeData = { alpha: 0, beta: 0, gamma: 0 };
 
+let colors = ["#FF0000", "#00ff00"]
 
 let numRows = 10;
 let numCols = 10;
@@ -129,6 +130,13 @@ startGameBtn.addEventListener("click", () => {
     }
   }
 });
+
+
+socket.on("receieveMap",(maze)=>{
+  console.log(maze)
+  console.log("MONEY BABY")
+})
+
 socket.on("roomCreated", (roomCode) => {
   currentRoom = roomCode;
   isHost = true;
@@ -150,7 +158,7 @@ socket.on("joinedRoom", ({ roomCode, isHost: hostStatus }) => {
   }
 });
 
-socket.on("playerJoined", ({ name,room }) => {
+socket.on("playerJoined", ({ name, room }) => {
   const li = document.createElement("li");
   li.textContent = name;
   playerList.appendChild(li);
@@ -259,15 +267,13 @@ function stopSendingGyroscopeData() {
 }
 
 // Add a handler for gyroscope data on the host side
-socket.on("gyroscopeUpdate", ({ playerInfo, data }) => {
-  updateGyroscopeDisplay(playerInfo, data);
+socket.on("gyroscopeUpdate", ({ playerId, data, room}) => {
+  updateGyroscopeDisplay(playerId, data, room);
+
 });
 
 // Function to update the gyroscope display on the host screen
-function updateGyroscopeDisplay(playerInfo, data) {
-  const playerId = playerInfo.id
-  const name = playerInfo.name
-
+function updateGyroscopeDisplay(playerId, data, room) {
   const playerElement = document.getElementById(`player-${playerId}`);
 
   if (!playerElement) {
@@ -280,7 +286,13 @@ function updateGyroscopeDisplay(playerInfo, data) {
 
     const ball = document.createElement("div");
     ball.id = `player-${playerId}-ball`;
-    ball.classList.add("ball")
+    ball.style.backgroundColor = colors[room.players.findIndex(player=> player.id === playerId)]
+    // ball.style.cssText = `background-color: ${colors[room.players.findIndex(player=> player.id === playerId)]};`;
+    // ball.style.cssText = `background-color: ${colors[room.players.findIndex(player=> player.id === playerId)]};`;
+    ball.style.color = "yellow";
+
+    console.log(ball, colors[room.players.findIndex(player=> player.id === playerId)])
+    // ball.classList.add("ball")
 
     document.getElementById("gyroscope-data").appendChild(newPlayerElement);
     document.getElementById(`player-${playerId}`).appendChild(ball)
@@ -293,10 +305,10 @@ function updateGyroscopeDisplay(playerInfo, data) {
       data.gamma)
 
   
-  
+
   document.getElementById(
     `player-${playerId}-text`
-  ).textContent = `Player ${name}:
+  ).textContent = `Player ${playerId}:
   Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
 
 }
