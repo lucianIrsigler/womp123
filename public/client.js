@@ -19,6 +19,89 @@ let isHost = false;
 let gyroscopeInterval = null;
 const gyroscopeData = { alpha: 0, beta: 0, gamma: 0 };
 
+
+let numRows = 10;
+let numCols = 10;
+
+class Maze {
+  constructor(width, height) {
+    this.width = width;
+    this.height = height;
+    this.grid = this.createGrid();
+    this.walls = [];
+    this.generateMaze(0, 0);
+  }
+
+  createGrid() {
+    const grid = [];
+    for (let x = 0; x < this.width; x++) {
+      grid[x] = [];
+      for (let y = 0; y < this.height; y++) {
+        grid[x][y] = { visited: false, walls: [true, true, true, true] }; // top, right, bottom, left
+      }
+    }
+    return grid;
+  }
+
+  generateMaze(cx, cy) {
+    const directions = [
+      { dx: 0, dy: -1, wall: 0, opposite: 2 }, // Up
+      { dx: 1, dy: 0, wall: 1, opposite: 3 }, // Right
+      { dx: 0, dy: 1, wall: 2, opposite: 0 }, // Down
+      { dx: -1, dy: 0, wall: 3, opposite: 1 }, // Left
+    ];
+
+    this.grid[cx][cy].visited = true;
+
+    // Shuffle directions
+    for (let i = directions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [directions[i], directions[j]] = [directions[j], directions[i]];
+    }
+
+    for (const { dx, dy, wall, opposite } of directions) {
+      const nx = cx + dx;
+      const ny = cy + dy;
+
+      if (
+        nx >= 0 &&
+        nx < this.width &&
+        ny >= 0 &&
+        ny < this.height &&
+        !this.grid[nx][ny].visited
+      ) {
+        this.grid[cx][cy].walls[wall] = false;
+        this.grid[nx][ny].walls[opposite] = false;
+        this.generateMaze(nx, ny);
+      }
+    }
+  }
+
+  getWalls() {
+    const walls = [];
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        if (this.grid[x][y].walls[0])
+          walls.push({ column: x, row: y, horizontal: true, length: 1 });
+        if (this.grid[x][y].walls[1])
+          walls.push({ column: x + 1, row: y, horizontal: false, length: 1 });
+        if (this.grid[x][y].walls[2])
+          walls.push({ column: x, row: y + 1, horizontal: true, length: 1 });
+        if (this.grid[x][y].walls[3])
+          walls.push({ column: x, row: y, horizontal: false, length: 1 });
+      }
+    }
+    return walls;
+  }
+}
+
+function generateNewMaze(rows, cols) {
+  const maze = new Maze(rows, cols);
+  const walls = maze.getWalls();
+  return JSON.stringify(walls, null, 2);
+}
+
+
 createRoomBtn.addEventListener("click", () => {
   socket.emit("createRoom");
 });
@@ -38,9 +121,20 @@ submitJoinBtn.addEventListener("click", () => {
 
 startGameBtn.addEventListener("click", () => {
   if (currentRoom) {
-    socket.emit("startGame", currentRoom);
+    if (isHost){
+      const roomCode = roomCodeDisplay.textContent.trim();
+      const map = JSON.parse(generateNewMaze(numRows, numCols))
+      socket.emit("transmitMap",{map,roomCode});
+      socket.emit("startGame", currentRoom);
+    }
   }
 });
+
+
+socket.on("receieveMap",(maze)=>{
+  console.log(maze)
+  console.log("MONEY BABY")
+})
 
 socket.on("roomCreated", (roomCode) => {
   currentRoom = roomCode;
@@ -70,7 +164,6 @@ socket.on("playerJoined", ({ name, room }) => {
 });
 
 socket.on("updatePlayerList", (players) => {
-  console.log(players);
   updatePlayerList(players);
 });
 
@@ -113,6 +206,8 @@ socket.on("gameStarted", () => {
       window.addEventListener("deviceorientation", handleOrientation);
       startSendingGyroscopeData();
     }
+
+
   }
 });
 
@@ -130,7 +225,6 @@ function updatePlayerList(players) {
 
   if (players.length < 4) {
     roomStatus.textContent = `Waiting for players... (${players.length}/4)`;
-    console.log(players)
     if (isHost && players.length>=1) {
       startGameBtn.disabled = false;
     }
@@ -153,20 +247,10 @@ function handleOrientation(event) {
 // Add this function to start sending gyroscope data
 function startSendingGyroscopeData() {
   gyroscopeInterval = setInterval(() => {
-
-    let vectorX = Math.sin(gyroscopeData.beta) * Math.cos(gyroscopeData.gamma)
-    let vectorY = Math.sin(gyroscopeData.beta) * Math.cos(gyroscopeData.gamma)
-    //let vectorZ = Math.sin(gyroscopeData.beta)
-
-    vectors = {
-      "x":vectorX,
-      "y":vectorY,
-    }
-
-    socket.emit("gyroscopeData", {
-      roomCode: currentRoom,
-      data: vectors,
-    });
+  socket.emit("gyroscopeData", {
+    roomCode: currentRoom,
+    data: gyroscopeData,
+  });
   }, 100); // Send data every 100ms
 
 }

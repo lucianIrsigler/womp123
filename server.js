@@ -51,18 +51,17 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("transmitMap", ({map,roomCode}) => {
+    io.to(roomCode).emit("receieveMap",map);
+  });
+
+
   socket.on("gyroscopeData", ({ roomCode, data }) => {
     const room = rooms.get(roomCode);
-    /*if (room && room.host) {
-      io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
-    }*/
-
-    res.x = Math.max(res.x,data.x);
-    res.y = Math.max(res.y,data.y);
 
     if (room) {
       //io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
-      io.to(roomCode).emit("updateBall",{playerID: socket.id, data:res})
+      io.to(roomCode).emit("updateBall",{playerID: socket.id, data:data})
     }
   });
 

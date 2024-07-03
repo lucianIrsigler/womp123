@@ -1,84 +1,3 @@
-let numRows = 10;
-let numCols = 10;
-
-class Maze {
-  constructor(width, height) {
-    this.width = width;
-    this.height = height;
-    this.grid = this.createGrid();
-    this.walls = [];
-    this.generateMaze(0, 0);
-  }
-
-  createGrid() {
-    const grid = [];
-    for (let x = 0; x < this.width; x++) {
-      grid[x] = [];
-      for (let y = 0; y < this.height; y++) {
-        grid[x][y] = { visited: false, walls: [true, true, true, true] }; // top, right, bottom, left
-      }
-    }
-    return grid;
-  }
-
-  generateMaze(cx, cy) {
-    const directions = [
-      { dx: 0, dy: -1, wall: 0, opposite: 2 }, // Up
-      { dx: 1, dy: 0, wall: 1, opposite: 3 }, // Right
-      { dx: 0, dy: 1, wall: 2, opposite: 0 }, // Down
-      { dx: -1, dy: 0, wall: 3, opposite: 1 }, // Left
-    ];
-
-    this.grid[cx][cy].visited = true;
-
-    // Shuffle directions
-    for (let i = directions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [directions[i], directions[j]] = [directions[j], directions[i]];
-    }
-
-    for (const { dx, dy, wall, opposite } of directions) {
-      const nx = cx + dx;
-      const ny = cy + dy;
-
-      if (
-        nx >= 0 &&
-        nx < this.width &&
-        ny >= 0 &&
-        ny < this.height &&
-        !this.grid[nx][ny].visited
-      ) {
-        this.grid[cx][cy].walls[wall] = false;
-        this.grid[nx][ny].walls[opposite] = false;
-        this.generateMaze(nx, ny);
-      }
-    }
-  }
-
-  getWalls() {
-    const walls = [];
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        if (this.grid[x][y].walls[0])
-          walls.push({ column: x, row: y, horizontal: true, length: 1 });
-        if (this.grid[x][y].walls[1])
-          walls.push({ column: x + 1, row: y, horizontal: false, length: 1 });
-        if (this.grid[x][y].walls[2])
-          walls.push({ column: x, row: y + 1, horizontal: true, length: 1 });
-        if (this.grid[x][y].walls[3])
-          walls.push({ column: x, row: y, horizontal: false, length: 1 });
-      }
-    }
-    return walls;
-  }
-}
-
-function generateNewMaze(rows, cols) {
-  const maze = new Maze(rows, cols);
-  const walls = maze.getWalls();
-  return JSON.stringify(walls, null, 2);
-}
-
 Math.minmax = (value, limit) => {
   return Math.max(Math.min(value, limit), -limit);
 };
@@ -194,82 +113,58 @@ balls.forEach(({ x, y }) => {
 });
 
 // Wall metadata
-const mazeData = JSON.parse(generateNewMaze(numRows, numCols));
+let mapData;
 
-const walls = mazeData.map((wall) => ({
-  x: wall.column * (pathW + wallW),
-  y: wall.row * (pathW + wallW),
-  horizontal: wall.horizontal,
-  length: wall.length * (pathW + wallW),
-}));
+socket.on("receieveMap",(maze)=>{
+  mazeData = maze;
 
-// Draw walls
-walls.forEach(({ x, y, horizontal, length }) => {
-  const wall = document.createElement("div");
-  wall.setAttribute("class", "wall");
-  wall.style.cssText = `
-        left: ${x}px;
-        top: ${y}px;
-        width: ${wallW}px;
-        height: ${length}px;
-        transform: rotate(${horizontal ? -90 : 0}deg);
-        `;
+  const walls = mazeData.map((wall) => ({
+    x: wall.column * (pathW + wallW),
+    y: wall.row * (pathW + wallW),
+    horizontal: wall.horizontal,
+    length: wall.length * (pathW + wallW),
+  }));
+  
+  // Draw walls
+  walls.forEach(({ x, y, horizontal, length }) => {
+    const wall = document.createElement("div");
+    wall.setAttribute("class", "wall");
+    wall.style.cssText = `
+          left: ${x}px;
+          top: ${y}px;
+          width: ${wallW}px;
+          height: ${length}px;
+          transform: rotate(${horizontal ? -90 : 0}deg);
+          `;
+  
+    mazeElement.appendChild(wall);
+  });
+  
+  const holes = [{ column: numRows / 2, row: numCols / 2 }].map((hole) => ({
+    x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
+    y: hole.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
+  }));
+  
+  holes.forEach(({ x, y }) => {
+    const ball = document.createElement("div");
+    ball.setAttribute("class", "black-hole");
+    ball.style.cssText = `left: ${x}px; top: ${y}px; `;
+  
+    mazeElement.appendChild(ball);
+    holeElements.push(ball);
+  });
+})
 
-  mazeElement.appendChild(wall);
-});
-
-const holes = [{ column: numRows / 2, row: numCols / 2 }].map((hole) => ({
-  x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
-  y: hole.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
-}));
-
-holes.forEach(({ x, y }) => {
-  const ball = document.createElement("div");
-  ball.setAttribute("class", "black-hole");
-  ball.style.cssText = `left: ${x}px; top: ${y}px; `;
-
-  mazeElement.appendChild(ball);
-  holeElements.push(ball);
-});
-
-window.addEventListener("keydown", function (event) {
-  // If not an arrow key or space or H was pressed then return
-  if (![" ", "H", "h", "E", "e"].includes(event.key)) return;
-
-  // If an arrow key was pressed then first prevent default
-  event.preventDefault();
-
-  // If space was pressed restart the game
-  if (event.key == " ") {
-    resetGame();
-    return;
-  }
-});
-
-// Listen to device orientation events
-window.addEventListener("deviceorientation", handleOrientation, true);
-
-function handleOrientation(event) {
-  if (!gameInProgress) {
-    gameInProgress = true;
-    window.requestAnimationFrame(main);
-  }
-
-  const rotationY = Math.minmax(event.gamma, 12); // Left to right tilt
-  const rotationX = Math.minmax(event.beta, 12); // Front to back tilt
-
-  // mazeElement.style.cssText = `
-  //     transform: rotateY(${rotationY}deg) rotateX(${-rotationX}deg)
-  //   `;
-
+socket.on("updateBall",({playerID,data})=>{
+  const rotationY = Math.minmax(data.gamma, 12); // Left to right tilt
+  const rotationX = Math.minmax(data.beta, 12); // Front to back tilt
   const gravity = 1;
   const friction = 0.01;
-
   accelerationX = gravity * Math.sin((rotationY / 180) * Math.PI);
   accelerationY = gravity * Math.sin((rotationX / 180) * Math.PI);
   frictionX = gravity * Math.cos((rotationY / 180) * Math.PI) * friction;
   frictionY = gravity * Math.cos((rotationX / 180) * Math.PI) * friction;
-}
+})
 
 function resetGame() {
   previousTimestamp = undefined;
