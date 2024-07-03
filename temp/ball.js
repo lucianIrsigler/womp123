@@ -524,9 +524,11 @@ function main(timestamp) {
           if (distance <= holeSize / 2) {
             // The ball fell into a hole
             holeElements[hi].style.backgroundColor = "green";
-            alert("Game over - Won game");
             gameInProgress = false;
-            resetGame();
+            var audio = new Audio('audio/downer_noise.mp3');
+            audio.play();
+
+            //resetGame();
           }
         });
 
@@ -540,16 +542,9 @@ function main(timestamp) {
         ballElements[index].style.cssText = `left: ${x}px; top: ${y}px; `;
       });
     }
-
     // Win detection
-    
   } catch (error) {
     if (error.message == "The ball fell into a hole") {
-      noteElement.innerHTML = `A ball fell into a black hole! Press space to reset the game.
-          <p>
-            Back to easy? Press E
-          </p>`;
-      noteElement.style.opacity = 1;
       gameInProgress = false;
     } else throw error;
   }
