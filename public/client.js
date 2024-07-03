@@ -179,7 +179,7 @@ socket.on("roomFull", () => {
 });
 
 socket.on("playAudio",(id)=>{
-  
+
   if (socket.id!==id){
     var audio = new Audio("audio/downer_noise.mp3")
     audio.play()
@@ -259,7 +259,7 @@ function startSendingGyroscopeData() {
         roomCode: currentRoom,
         data: gyroscopeData,
       });
-    }, 100); // Send data every 100ms
+    }, 200); // Send data every 100ms
   }
 }
 
