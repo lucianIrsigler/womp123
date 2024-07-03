@@ -100,23 +100,13 @@ let balls = [];
 let ballElements = [];
 let holeElements = [];
 
-resetGame();
 
-// Draw balls for the first time
-balls.forEach(({ x, y }) => {
-  const ball = document.createElement("div");
-  ball.setAttribute("class", "ball");
-  ball.style.cssText = `left: ${x}px; top: ${y}px; `;
-
-  mazeElement.appendChild(ball);
-  ballElements.push(ball);
-});
 
 // Wall metadata
 let mapData,walls,holes;
 
-socket.on("receieveMap",(maze)=>{
-  mazeData = maze;
+socket.on("receieveMap",({map,room})=>{
+  mazeData = map;
 
   walls = mazeData.map((wall) => ({
     x: wall.column * (pathW + wallW),
@@ -149,13 +139,23 @@ socket.on("receieveMap",(maze)=>{
     const ball = document.createElement("div");
     ball.setAttribute("class", "black-hole");
     ball.style.cssText = `left: ${x}px; top: ${y}px; `;
-  
     mazeElement.appendChild(ball);
     holeElements.push(ball);
   });
+
+  resetGame(room)
+
+  balls.forEach(({ x, y },index) => {
+    const ball = document.createElement("div");
+    ball.setAttribute("class", "ball");
+    ball.style.cssText = `left: ${x}px; top: ${y}px; `;
+    ball.id = `ball-${room.players[index]}`
+    mazeElement.appendChild(ball);
+    ballElements.push(ball);
+  });  
 })
 
-socket.on("updateBall",({playerID,data})=>{
+socket.on("updateBall",({playerID,data,host})=>{
   if (data===null){
     console.log("no data")
     return;
@@ -172,6 +172,12 @@ socket.on("updateBall",({playerID,data})=>{
   accelerationY = gravity * Math.sin((rotationX / 180) * Math.PI);
   frictionX = gravity * Math.cos((rotationY / 180) * Math.PI) * friction;
   frictionY = gravity * Math.cos((rotationX / 180) * Math.PI) * friction;
+
+  if (host){
+    mazeElement.style.cssText = `
+          transform: rotateY(${rotationY}deg) rotateX(${-rotationX}deg)
+        `;
+  }
 
   const playerElement = document.getElementById(`player-res`);
   if (!playerElement) {
@@ -223,7 +229,7 @@ function updateThing(garden,ball,beta,gamma) {
 
 
 
-function resetGame() {
+function resetGame(room) {
   previousTimestamp = undefined;
   gameInProgress = false;
   mouseStartX = undefined;
@@ -237,27 +243,29 @@ function resetGame() {
         transform: rotateY(0deg) rotateX(0deg)
       `;
 
-  balls = [
-    { column: 0, row: 0 },
-  ].map((ball) => ({
+  constantBalls = [{ column: 0, row: 0 },{ column: 0, row: 9 },{ column: 9, row: 0 },{ column: 9, row: 9 }]
+
+  let playerBalls = [];
+
+  for (let i=0;i<room.players.length;i++){
+    playerBalls.push(constantBalls[i]);
+  }
+
+  balls = playerBalls.map((ball) => ({
     x: ball.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
     y: ball.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
     velocityX: 0,
-    velocityY: 0,
+    velocityY: 0
   }));
-
+  
   if (ballElements.length) {
     balls.forEach(({ x, y }, index) => {
       ballElements[index].style.cssText = `left: ${x}px; top: ${y}px; `;
+      ballElements[index].id = `ball-${room.players[index]}`
     });
-  }
-
-  // Remove previous hole elements
-  holeElements.forEach((holeElement) => {
-    mazeElement.removeChild(holeElement);
-  });
-  holeElements = [];
+  }    
 }
+
 
 function main(timestamp) {
   // It is possible to reset the game mid-game. This case the look should stop

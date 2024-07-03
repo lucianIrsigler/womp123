@@ -55,7 +55,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("transmitMap", ({map,roomCode}) => {
-    io.to(roomCode).emit("receieveMap",map);
+    const room = rooms.get(roomCode);
+    io.to(roomCode).emit("receieveMap",{map,room});
   });
 
 
@@ -81,7 +82,7 @@ io.on("connection", (socket) => {
       res.beta = res.beta/room.players.length;
 
       io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
-      io.to(roomCode).emit("updateBall",{playerID: socket.id, data:res})
+      io.to(roomCode).emit("updateBall",{playerID: socket.id, data:res,host:room.host==socket.id})
     }
   });
 
