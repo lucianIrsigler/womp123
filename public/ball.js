@@ -1,5 +1,7 @@
 let colors = ["red", "green", "blue", "yellow"];
 let softColors = ["#ff9b9b", "#6fc276", "#d1dff6", "#fff49b"];
+let index = 0
+
 
 Math.minmax = (value, limit) => {
   return Math.max(Math.min(value, limit), -limit);
@@ -104,7 +106,7 @@ let ballElements = [];
 let holeElements = [];
 
 socket_to_ball = {}
-
+let winner;
 
 // Wall metadata
 let mapData, walls, holes;
@@ -299,17 +301,15 @@ function main(timestamp) {
   // Time passed since last cycle divided by 16
   // This function gets called every 16 ms on average so dividing by 16 will result in 1
   const timeElapsed = (timestamp - previousTimestamp) / 16;
-
   try {
+    index = 0
+
     // If mouse didn't move yet don't do anything
     if (accelerationX != undefined && accelerationY != undefined) {
       const velocityChangeX = accelerationX * timeElapsed;
       const velocityChangeY = accelerationY * timeElapsed;
       const frictionDeltaX = frictionX * timeElapsed;
       const frictionDeltaY = frictionY * timeElapsed;
-
-      let index = 0
-
       balls.forEach((ball) => {
         if (velocityChangeX == 0) {
           // No rotation, the plane is flat
@@ -541,6 +541,8 @@ function main(timestamp) {
             holeElements[hi].style.backgroundColor = "green";
             gameInProgress = false;
             document.getElementById("game-start-title").textContent = "Winner:"+socket_to_ball[index];
+
+            winner = index;
             //resetGame();
             throw Error("Game over")
           }
@@ -561,8 +563,10 @@ function main(timestamp) {
     }
   } catch (error) {
     if (error.message == "Game over") {
-        var audio = new Audio("audio/downer_noise.mp3")
-        audio.play()
+        if (index!=winner){
+          var audio = new Audio("audio/downer_noise.mp3")
+          audio.play()
+        }
     } else throw error;
   }
 }
