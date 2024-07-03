@@ -105,14 +105,18 @@ let balls = [];
 let ballElements = [];
 let holeElements = [];
 
-socket_to_ball = {}
+socket_to_ball_name = {}
+socket_to_ball_id = {}
+let currRoom;
+
 let winner;
 
 // Wall metadata
 let mapData, walls, holes;
 
-socket.on("receieveMap", ({ map, room }) => {
+socket.on("receieveMap", ({ map, room,roomCode }) => {
   mazeData = map;
+  currRoom = roomCode
 
   walls = mazeData.map((wall) => ({
     x: wall.column * (pathW + wallW),
@@ -158,11 +162,13 @@ socket.on("receieveMap", ({ map, room }) => {
     ball.id = `ball-${id}`;
     mazeElement.appendChild(ball);
     ballElements.push(ball);
-
     const name = room.players[index].name;
     
-    socket_to_ball[index] = name
+    socket_to_ball_name[index] = name
+    socket_to_ball_id[index] = id
   });
+
+  console.log(roomCode)
 
 });
 
@@ -540,10 +546,12 @@ function main(timestamp) {
             // The ball fell into a hole
             holeElements[hi].style.backgroundColor = "green";
             gameInProgress = false;
-            document.getElementById("game-start-title").textContent = "Winner:"+socket_to_ball[index];
-            socket.emit("playAudio")
+            document.getElementById("game-start-title").textContent = "Winner:"+socket_to_ball_name[index];
+
+            const id = socket_to_ball_id[index];
+
+            socket.to(currRoom).emit("playAudio",id);
             winner = index;
-            //resetGame();
             throw Error("Game over")
           }
         });

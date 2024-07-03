@@ -128,10 +128,7 @@ startGameBtn.addEventListener("click", () => {
     }
   }
 });
-socket.on("receieveMap",(maze)=>{
-  console.log(maze)
-  console.log("MONEY BABY")
-})
+
 
 socket.on("roomCreated", (roomCode) => {
   currentRoom = roomCode;
@@ -181,9 +178,12 @@ socket.on("roomFull", () => {
   }
 });
 
-socket.on("playAudio",()=>{
-  var audio = new Audio("audio/downer_noise.mp3")
-  audio.play()
+socket.on("playAudio",(id)=>{
+  
+  if (socket.id!==id){
+    var audio = new Audio("audio/downer_noise.mp3")
+    audio.play()
+  }
 })
 
 

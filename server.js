@@ -61,7 +61,7 @@ io.on("connection", (socket) => {
 
   socket.on("transmitMap", ({ map, roomCode }) => {
     const room = rooms.get(roomCode);
-    io.to(roomCode).emit("receieveMap", { map, room });
+    io.to(roomCode).emit("receieveMap", { map, room,roomCode });
   });
 
   socket.on("gyroscopeData", ({ roomCode, data }) => {
