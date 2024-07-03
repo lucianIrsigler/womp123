@@ -541,7 +541,7 @@ function main(timestamp) {
             holeElements[hi].style.backgroundColor = "green";
             gameInProgress = false;
             document.getElementById("game-start-title").textContent = "Winner:"+socket_to_ball[index];
-
+            socket.emit("playAudio")
             winner = index;
             //resetGame();
             throw Error("Game over")
@@ -563,10 +563,7 @@ function main(timestamp) {
     }
   } catch (error) {
     if (error.message == "Game over") {
-        if (index!=winner){
-          var audio = new Audio("audio/downer_noise.mp3")
-          audio.play()
-        }
+      ;
     } else throw error;
   }
 }

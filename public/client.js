@@ -181,6 +181,13 @@ socket.on("roomFull", () => {
   }
 });
 
+socket.on("playAudio",()=>{
+  var audio = new Audio("audio/downer_noise.mp3")
+  audio.play()
+})
+
+
+
 socket.on("gameStarted", (room) => {
   lobby.style.display = "none";
   gameStartTitle.style.display = "block";
