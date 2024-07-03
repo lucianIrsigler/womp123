@@ -165,7 +165,7 @@ socket.on("updateBall",({data,host})=>{
     window.requestAnimationFrame(main)
   }
 
-  console.log(data)
+  //console.log(host)
   const rotationY = Math.minmax(data.gamma, 12); // Left to right tilt
   const rotationX = Math.minmax(data.beta, 12); // Front to back tilt
   const gravity = 1;
@@ -182,7 +182,6 @@ socket.on("updateBall",({data,host})=>{
   }
 
   const playerElement = document.getElementById(`player-res`);
-
   if (!playerElement) {
     const text = document.createElement("div");
     text.id="res"
@@ -525,9 +524,9 @@ function main(timestamp) {
           if (distance <= holeSize / 2) {
             // The ball fell into a hole
             holeElements[hi].style.backgroundColor = "green";
+            alert("Game over - Won game");
             gameInProgress = false;
-            console.log(ball)
-            throw Error("Game won");
+            resetGame();
           }
         });
 
@@ -541,10 +540,35 @@ function main(timestamp) {
         ballElements[index].style.cssText = `left: ${x}px; top: ${y}px; `;
       });
     }
-  } catch (error) {
-    if (error.message == "Game won") {
-      gameInProgress = false;
 
+    // Win detection
+    if (
+      balls.every(
+        (ball) => distance2D(ball, { x: 350 / 2, y: 315 / 2 }) < 65 / 2
+      )
+    ) {
+      noteElement.innerHTML = `Congrats, you did it!
+          ${!hardMode ? "<p>Press H for hard mode</p>" : ""}
+          <p>
+            Follow me
+            <a href="https://twitter.com/HunorBorbely" , target="_top"
+              >@HunorBorbely</a
+            >
+          </p>`;
+      noteElement.style.opacity = 1;
+      gameInProgress = false;
+    } else {
+      previousTimestamp = timestamp;
+      window.requestAnimationFrame(main);
+    }
+  } catch (error) {
+    if (error.message == "The ball fell into a hole") {
+      noteElement.innerHTML = `A ball fell into a black hole! Press space to reset the game.
+          <p>
+            Back to easy? Press E
+          </p>`;
+      noteElement.style.opacity = 1;
+      gameInProgress = false;
     } else throw error;
   }
 }
