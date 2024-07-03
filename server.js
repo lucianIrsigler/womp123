@@ -72,6 +72,10 @@ io.on("connection", (socket) => {
         res.beta+=data1.beta;
       });
 
+      console.log(res)
+      console.log(room)
+      
+
       res.gamma = res.gamma/room.players.length;
       res.beta = res.beta/room.players.length;
       let playerInfo = room.players[room.players.findIndex((p) => p.id === socket.id)]
