@@ -165,7 +165,7 @@ socket.on("updateBall",({data,host})=>{
     window.requestAnimationFrame(main)
   }
 
-  //console.log(host)
+  console.log(data)
   const rotationY = Math.minmax(data.gamma, 12); // Left to right tilt
   const rotationX = Math.minmax(data.beta, 12); // Front to back tilt
   const gravity = 1;
@@ -182,6 +182,7 @@ socket.on("updateBall",({data,host})=>{
   }
 
   const playerElement = document.getElementById(`player-res`);
+
   if (!playerElement) {
     const text = document.createElement("div");
     text.id="res"
@@ -543,7 +544,7 @@ function main(timestamp) {
   } catch (error) {
     if (error.message == "Game won") {
       gameInProgress = false;
-      
+
     } else throw error;
   }
 }
