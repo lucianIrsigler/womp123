@@ -82,13 +82,13 @@ io.on("connection", (socket) => {
       });
 
         
-      if (prevRes.beta+res.beta>360){
-        res.beta-=360
+      if (res.gamma==prevRes.gamma || res.beta==prevRes.beta){
+        ;
+      }else{
+        res.gamma = Math.max(Math.abs(res.gamma),Math.abs(prevRes.gamma))
+        res.beta = Math.max(Math.abs(res.beta),Math.abs(prevRes.beta));
       }
-
-      res.gamma = Math.max(Math.abs(res.gamma),Math.abs(prevRes.gamma))
-      res.beta = Math.max(Math.abs(res.beta),Math.abs(prevRes.beta));
-
+      
       //res.gamma = res.gamma / room.players.length;
       //res.beta = res.beta / room.players.length;
 
