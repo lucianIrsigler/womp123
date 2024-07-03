@@ -84,7 +84,10 @@ io.on("connection", (socket) => {
       res.gamma = res.gamma/room.players.length;
       res.beta = res.beta/room.players.length;
 
-      io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data: data, room:room});
+      const playerIndex = room.players.findIndex((p) => p.id === socket.id);
+      const playerInfo = room.players[playerIndex];
+
+      io.to(roomCode).emit("gyroscopeUpdate", { playerInfo, data, room});
       io.in(roomCode).emit("updateBall",{data:res,host:room.host==socket.id})
     }
   });

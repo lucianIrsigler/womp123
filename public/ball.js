@@ -180,7 +180,7 @@ socket.on("updateBall",({data,host})=>{
           transform: rotateY(${rotationY}deg) rotateX(${-rotationX}deg)
         `;
   }
-
+  /*
   const playerElement = document.getElementById(`player-res`);
   if (!playerElement) {
     const text = document.createElement("div");
@@ -202,7 +202,7 @@ socket.on("updateBall",({data,host})=>{
   updateThing(document.getElementById(`player-res`),
       document.getElementById(`player-res-ball`),
       data.beta,
-      data.gamma)
+      data.gamma)*/
 
 })
 

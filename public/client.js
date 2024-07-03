@@ -274,6 +274,7 @@ socket.on("gyroscopeUpdate", ({ playerId, data, room}) => {
 
 // Function to update the gyroscope display on the host screen
 function updateGyroscopeDisplay(playerId, data, room) {
+  /*
   const playerElement = document.getElementById(`player-${playerId}`);
 
   if (!playerElement) {
@@ -309,7 +310,7 @@ function updateGyroscopeDisplay(playerId, data, room) {
   document.getElementById(
     `player-${playerId}-text`
   ).textContent = `Player ${playerId}:
-  Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;
+  Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;*/
 
 }
 
