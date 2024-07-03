@@ -3,10 +3,10 @@ const socket = io();
 const mainMenu = document.getElementById("main-menu");
 const joinForm = document.getElementById("join-form");
 const lobby = document.getElementById("lobby");
-const gameStartTitle = document.getElementById("game-start-title");
 const game = document.getElementById("game");
 const createRoomBtn = document.getElementById("create-room");
 const joinRoomBtn = document.getElementById("join-room");
+let logo = document.getElementById("logoStuff");
 const submitJoinBtn = document.getElementById("submit-join");
 const startGameBtn = document.getElementById("start-game");
 const playerNameInput = document.getElementById("player-name");
@@ -19,6 +19,8 @@ let currentRoom = null;
 let isHost = false;
 let gyroscopeInterval = null;
 const gyroscopeData = { alpha: 0, beta: 0, gamma: 0 };
+
+let colors = ["#FF0000", "#00ff00"]
 
 let numRows = 10;
 let numCols = 10;
@@ -101,13 +103,17 @@ function generateNewMaze(rows, cols) {
   return JSON.stringify(walls, null, 2);
 }
 
+
 createRoomBtn.addEventListener("click", () => {
   socket.emit("createRoom");
+  logo.style.display="none"
 });
 
 joinRoomBtn.addEventListener("click", () => {
   mainMenu.style.display = "none";
   joinForm.style.display = "block";
+  logo.style.display="none"
+
 });
 
 submitJoinBtn.addEventListener("click", () => {
@@ -120,14 +126,20 @@ submitJoinBtn.addEventListener("click", () => {
 
 startGameBtn.addEventListener("click", () => {
   if (currentRoom) {
-    if (isHost) {
+    if (isHost){
       const roomCode = roomCodeDisplay.textContent.trim();
-      const map = JSON.parse(generateNewMaze(numRows, numCols));
-      socket.emit("transmitMap", { map, roomCode });
+      const map = JSON.parse(generateNewMaze(numRows, numCols))
+      socket.emit("transmitMap",{map,roomCode});
       socket.emit("startGame", currentRoom);
     }
   }
 });
+
+
+socket.on("receieveMap",(maze)=>{
+  console.log(maze)
+  console.log("MONEY BABY")
+})
 
 socket.on("roomCreated", (roomCode) => {
   currentRoom = roomCode;
@@ -139,7 +151,7 @@ socket.on("roomCreated", (roomCode) => {
   roomStatus.textContent = "Waiting for players...";
 });
 
-socket.on("joinedRoom", ({ roomCode, host: hostStatus }) => {
+socket.on("joinedRoom", ({ roomCode, isHost: hostStatus }) => {
   currentRoom = roomCode;
   isHost = hostStatus;
   joinForm.style.display = "none";
@@ -150,7 +162,7 @@ socket.on("joinedRoom", ({ roomCode, host: hostStatus }) => {
   }
 });
 
-socket.on("playerJoined", ({ name,room }) => {
+socket.on("playerJoined", ({ name, room }) => {
   const li = document.createElement("li");
   li.textContent = name;
   playerList.appendChild(li);
@@ -178,10 +190,7 @@ socket.on("roomFull", () => {
 
 socket.on("gameStarted", () => {
   lobby.style.display = "none";
-  gameStartTitle.style.display = "block";
-  game.style.display = "flex";
-  game.style.flexDirection = "column";
-  game.style.alignItems = "center";
+  game.style.display = "block";
 
   if (!isHost) {
     // Request permission to use the gyroscope on mobile devices
@@ -202,6 +211,8 @@ socket.on("gameStarted", () => {
       window.addEventListener("deviceorientation", handleOrientation);
       startSendingGyroscopeData();
     }
+
+
   }
 });
 
@@ -219,7 +230,7 @@ function updatePlayerList(players) {
 
   if (players.length < 4) {
     roomStatus.textContent = `Waiting for players... (${players.length}/4)`;
-    if (isHost && players.length >= 1) {
+    if (isHost && players.length>=1) {
       startGameBtn.disabled = false;
     }
   } else {
@@ -237,14 +248,15 @@ function handleOrientation(event) {
   gyroscopeData.gamma = event.gamma; // Y-axis rotation
 }
 
+
 // Add this function to start sending gyroscope data
 function startSendingGyroscopeData() {
-  if (!isHost) {
+  if (!isHost){
     gyroscopeInterval = setInterval(() => {
-      socket.emit("gyroscopeData", {
-        roomCode: currentRoom,
-        data: gyroscopeData,
-      });
+    socket.emit("gyroscopeData", {
+      roomCode: currentRoom,
+      data: gyroscopeData,
+    });
     }, 100); // Send data every 100ms
   }
 }
@@ -259,54 +271,60 @@ function stopSendingGyroscopeData() {
 }
 
 // Add a handler for gyroscope data on the host side
-socket.on("gyroscopeUpdate", ({ playerId, data, room }) => {
+socket.on("gyroscopeUpdate", ({ playerId, data, room}) => {
   updateGyroscopeDisplay(playerId, data, room);
+
 });
 
 // Function to update the gyroscope display on the host screen
-function updateGyroscopeDisplay(playerInfo, data) {
-  const playerId = playerInfo.id
-  const name = playerInfo.name
-
 function updateGyroscopeDisplay(playerId, data, room) {
+  /*
   const playerElement = document.getElementById(`player-${playerId}`);
 
   if (!playerElement) {
     const text = document.createElement("div");
-    text.id = `player-${playerId}-text`;
+    text.id=`player-${playerId}-text`
 
     const newPlayerElement = document.createElement("div");
     newPlayerElement.id = `player-${playerId}`;
-    newPlayerElement.classList.add("garden");
+    newPlayerElement.classList.add("garden")
 
     const ball = document.createElement("div");
     ball.id = `player-${playerId}-ball`;
-    ball.classList.add("ball");
+    ball.style.backgroundColor = colors[room.players.findIndex(player=> player.id === playerId)]
+    // ball.style.cssText = `background-color: ${colors[room.players.findIndex(player=> player.id === playerId)]};`;
+    // ball.style.cssText = `background-color: ${colors[room.players.findIndex(player=> player.id === playerId)]};`;
+    ball.style.color = "yellow";
+
+    console.log(ball, colors[room.players.findIndex(player=> player.id === playerId)])
+    // ball.classList.add("ball")
 
     document.getElementById("gyroscope-data").appendChild(newPlayerElement);
-    document.getElementById(`player-${playerId}`).appendChild(ball);
-    document.getElementById(`player-${playerId}`).appendChild(text);
+    document.getElementById(`player-${playerId}`).appendChild(ball)
+    document.getElementById(`player-${playerId}`).appendChild(text)
   }
 
-  updateThing(
-    document.getElementById(`player-${playerId}`),
-    document.getElementById(`player-${playerId}-ball`),
-    data.beta,
-    data.gamma
-  );
+  updateThing(document.getElementById(`player-${playerId}`),
+      document.getElementById(`player-${playerId}-ball`),
+      data.beta,
+      data.gamma)
+
+  
 
   document.getElementById(
     `player-${playerId}-text`
   ).textContent = `Player ${playerId}:
-  Beta: ${data.beta}, Gamma: ${data.gamma}`;
+  Beta: ${data.beta.toFixed(2)}, Gamma: ${data.gamma.toFixed(2)}`;*/
+
 }
 
-function updateThing(garden, ball, beta, gamma) {
+function updateThing(garden,ball,beta,gamma) {
   const maxX = garden.clientWidth - ball.clientWidth;
   const maxY = garden.clientHeight - ball.clientHeight;
 
   let x = beta; // In degree in the range [-180,180)
   let y = gamma; // In degree in the range [-90,90)
+  
 
   if (x > 90) {
     x = 90;
@@ -322,3 +340,5 @@ function updateThing(garden, ball, beta, gamma) {
   ball.style.left = `${(maxY * y) / 180 - 10}px`; // rotating device around the y axis moves the ball horizontally
   ball.style.top = `${(maxX * x) / 180 - 10}px`; // rotating device around the x axis moves the ball vertically
 }
+
+
