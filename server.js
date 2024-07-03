@@ -81,6 +81,7 @@ io.on("connection", (socket) => {
         res.beta += data1.beta;
       });
 
+        
       if (prevRes.gamma+res.gamma>360){
         res.gamma-=360;
       }

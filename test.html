@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Round Maze</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    canvas {
+      border: 2px solid #333;
+      background-color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="mazeCanvas" width="350px" height="315px"></canvas>
+
+  <script>
+    const canvas = document.getElementById('mazeCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const numRows = 101;  // Must be an odd number for proper center alignment
+    const numCols = 101;  // Must be an odd number for proper center alignment
+    const cellSize = 5;  // Size of each cell in pixels
+    const center = Math.floor(numRows / 2);
+    const radius = center;
+
+    class Maze {
+      constructor(width, height) {
+        this.width = width;
+        this.height = height;
+        this.grid = this.createGrid();
+        this.walls = [];
+        this.generateMaze(center, center);
+      }
+
+      createGrid() {
+        const grid = [];
+        for (let x = 0; x < this.width; x++) {
+          grid[x] = [];
+          for (let y = 0; y < this.height; y++) {
+            const distance = Math.sqrt((x - center) ** 2 + (y - center) ** 2);
+            if (distance <= radius) {
+              grid[x][y] = { visited: false, walls: [true, true, true, true] }; // top, right, bottom, left
+            } else {
+              grid[x][y] = null; // outside the circle
+            }
+          }
+        }
+        return grid;
+      }
+
+      generateMaze(cx, cy) {
+        const directions = [
+          { dx: 0, dy: -1, wall: 0, opposite: 2 }, // Up
+          { dx: 1, dy: 0, wall: 1, opposite: 3 }, // Right
+          { dx: 0, dy: 1, wall: 2, opposite: 0 }, // Down
+          { dx: -1, dy: 0, wall: 3, opposite: 1 }, // Left
+        ];
+
+        this.grid[cx][cy].visited = true;
+
+        // Shuffle directions
+        for (let i = directions.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [directions[i], directions[j]] = [directions[j], directions[i]];
+        }
+
+        for (const { dx, dy, wall, opposite } of directions) {
+          const nx = cx + dx;
+          const ny = cy + dy;
+
+          if (
+            nx >= 0 &&
+            nx < this.width &&
+            ny >= 0 &&
+            ny < this.height &&
+            this.grid[nx][ny] !== null &&
+            !this.grid[nx][ny].visited
+          ) {
+            this.grid[cx][cy].walls[wall] = false;
+            this.grid[nx][ny].walls[opposite] = false;
+            this.generateMaze(nx, ny);
+          }
+        }
+      }
+
+      getWalls() {
+        const walls = [];
+        for (let x = 0; x < this.width; x++) {
+          for (let y = 0; y < this.height; y++) {
+            if (this.grid[x][y] !== null) {
+              if (this.grid[x][y].walls[0])
+                walls.push({ column: x, row: y, horizontal: true, length: 1 });
+              if (this.grid[x][y].walls[1])
+                walls.push({ column: x + 1, row: y, horizontal: false, length: 1 });
+              if (this.grid[x][y].walls[2])
+                walls.push({ column: x, row: y + 1, horizontal: true, length: 1 });
+              if (this.grid[x][y].walls[3])
+                walls.push({ column: x, row: y, horizontal: false, length: 1 });
+            }
+          }
+        }
+        return walls;
+      }
+    }
+
+    function generateNewMaze(rows, cols) {
+      const maze = new Maze(rows, cols);
+      const walls = maze.getWalls();
+      return JSON.stringify(walls, null, 2);
+    }
+
+    function drawMaze(maze) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const { column, row, horizontal, length } of maze) {
+        ctx.fillStyle = '#333';
+        if (horizontal) {
+          ctx.fillRect(column * cellSize, row * cellSize, cellSize * length, cellSize);
+        } else {
+          ctx.fillRect(column * cellSize, row * cellSize, cellSize, cellSize * length);
+        }
+      }
+
+      // Draw start and end points
+      ctx.fillStyle = 'green';
+      ctx.fillRect(center * cellSize, center * cellSize, cellSize, cellSize); // Start point
+
+      ctx.fillStyle = 'red';
+      let endX, endY;
+      do {
+        endX = Math.floor(Math.random() * numRows);
+        endY = Math.floor(Math.random() * numCols);
+      } while (maze.some(w => w.column === endX && w.row === endY) || Math.sqrt((endX - center) ** 2 + (endY - center) ** 2) > radius);
+      ctx.fillRect(endX * cellSize, endY * cellSize, cellSize, cellSize); // End point
+    }
+
+    const walls = JSON.parse(generateNewMaze(numRows, numCols));
+    drawMaze(walls);
+  </script>
+</body>
+</html>

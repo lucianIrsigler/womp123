@@ -324,6 +324,7 @@ function main(timestamp) {
 
         if (debugMode) console.log("tick", ball);
 
+
         walls.forEach((wall, wi) => {
           if (wall.horizontal) {
             // Horizontal wall
@@ -541,25 +542,7 @@ function main(timestamp) {
     }
 
     // Win detection
-    if (
-      balls.every(
-        (ball) => distance2D(ball, { x: 350 / 2, y: 315 / 2 }) < 65 / 2
-      )
-    ) {
-      noteElement.innerHTML = `Congrats, you did it!
-          ${!hardMode ? "<p>Press H for hard mode</p>" : ""}
-          <p>
-            Follow me
-            <a href="https://twitter.com/HunorBorbely" , target="_top"
-              >@HunorBorbely</a
-            >
-          </p>`;
-      noteElement.style.opacity = 1;
-      gameInProgress = false;
-    } else {
-      previousTimestamp = timestamp;
-      window.requestAnimationFrame(main);
-    }
+    
   } catch (error) {
     if (error.message == "The ball fell into a hole") {
       noteElement.innerHTML = `A ball fell into a black hole! Press space to reset the game.
