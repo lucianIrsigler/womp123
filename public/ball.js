@@ -173,7 +173,55 @@ socket.on("updateBall",({playerID,data})=>{
   frictionX = gravity * Math.cos((rotationY / 180) * Math.PI) * friction;
   frictionY = gravity * Math.cos((rotationX / 180) * Math.PI) * friction;
 
+  const playerElement = document.getElementById(`player-res`);
+  if (!playerElement) {
+    const text = document.createElement("div");
+    text.id="res"
+
+    const newPlayerElement = document.createElement("div");
+    newPlayerElement.id = `player-res`;
+    newPlayerElement.classList.add("garden")
+
+    const ball = document.createElement("div");
+    ball.id = `player-res-ball`;
+    ball.classList.add("ball")
+
+    document.getElementById("gyroscope-data").appendChild(newPlayerElement);
+    document.getElementById(`player-res`).appendChild(ball)
+    document.getElementById(`player-res`).appendChild(text)
+  }
+
+  updateThing(document.getElementById(`player-res`),
+      document.getElementById(`player-res-ball`),
+      data.beta,
+      data.gamma)
+
 })
+
+function updateThing(garden,ball,beta,gamma) {
+  const maxX = garden.clientWidth - ball.clientWidth;
+  const maxY = garden.clientHeight - ball.clientHeight;
+
+  let x = beta; // In degree in the range [-180,180)
+  let y = gamma; // In degree in the range [-90,90)
+  
+
+  if (x > 90) {
+    x = 90;
+  }
+  if (x < -90) {
+    x = -90;
+  }
+
+  // To make computation easier we shift the range of
+  // x and y to [0,180]
+  x += 90;
+  y += 90;
+  ball.style.left = `${(maxY * y) / 180 - 10}px`; // rotating device around the y axis moves the ball horizontally
+  ball.style.top = `${(maxX * x) / 180 - 10}px`; // rotating device around the x axis moves the ball vertically
+}
+
+
 
 function resetGame() {
   previousTimestamp = undefined;
