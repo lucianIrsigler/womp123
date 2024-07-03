@@ -246,13 +246,14 @@ function handleOrientation(event) {
 
 // Add this function to start sending gyroscope data
 function startSendingGyroscopeData() {
-  gyroscopeInterval = setInterval(() => {
-  socket.emit("gyroscopeData", {
-    roomCode: currentRoom,
-    data: gyroscopeData,
-  });
-  }, 100); // Send data every 100ms
-
+  if (!isHost){
+    gyroscopeInterval = setInterval(() => {
+    socket.emit("gyroscopeData", {
+      roomCode: currentRoom,
+      data: gyroscopeData,
+    });
+    }, 100); // Send data every 100ms
+  }
 }
 
 // Add this to clean up when the game ends or the user disconnects

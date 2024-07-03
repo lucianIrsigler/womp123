@@ -144,18 +144,18 @@ socket.on("receieveMap",({map,room})=>{
   });
 
   resetGame(room)
-
   balls.forEach(({ x, y },index) => {
     const ball = document.createElement("div");
     ball.setAttribute("class", "ball");
     ball.style.cssText = `left: ${x}px; top: ${y}px; `;
-    ball.id = `ball-${room.players[index]}`
+    const id = room.players[index].id
+    ball.id = `ball-${id}`
     mazeElement.appendChild(ball);
     ballElements.push(ball);
   });  
 })
 
-socket.on("updateBall",({playerID,data,host})=>{
+socket.on("updateBall",({data,host})=>{
   if (data===null){
     console.log("no data")
     return;
@@ -164,6 +164,8 @@ socket.on("updateBall",({playerID,data,host})=>{
     gameInProgress=true
     window.requestAnimationFrame(main)
   }
+
+  //console.log(host)
   const rotationY = Math.minmax(data.gamma, 12); // Left to right tilt
   const rotationX = Math.minmax(data.beta, 12); // Front to back tilt
   const gravity = 1;

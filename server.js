@@ -82,7 +82,7 @@ io.on("connection", (socket) => {
       res.beta = res.beta/room.players.length;
 
       io.to(roomCode).emit("gyroscopeUpdate", { playerId: socket.id, data });
-      io.to(roomCode).emit("updateBall",{playerID: socket.id, data:res,host:room.host==socket.id})
+      io.in(roomCode).emit("updateBall",{data:res,host:room.host==socket.id})
     }
   });
 
