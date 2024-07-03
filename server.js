@@ -33,7 +33,6 @@ io.on("connection", (socket) => {
 
         socket.emit("joinedRoom", {roomCode, isHost: false });
 
-        // Check if room is full after joining
         if (room.players.length === MAX_PLAYERS) {
           io.to(roomCode).emit("roomFull");
         }
@@ -55,7 +54,6 @@ io.on("connection", (socket) => {
     io.to(roomCode).emit("receieveMap",{map,room});
   });
 
-
   socket.on("gyroscopeData", ({ roomCode, data }) => {
     let res = {gamma:0,beta:0}
     const room = rooms.get(roomCode);
@@ -76,9 +74,7 @@ io.on("connection", (socket) => {
 
       res.gamma = res.gamma/room.players.length;
       res.beta = res.beta/room.players.length;
-
       let playerInfo = room.players[room.players.findIndex((p) => p.id === socket.id)]
-
       io.to(roomCode).emit("gyroscopeUpdate", { playerInfo, data});
       io.in(roomCode).emit("updateBall",{data:res,host:room.host==socket.id})
     }
