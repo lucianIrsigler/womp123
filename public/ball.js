@@ -543,6 +543,7 @@ function main(timestamp) {
   } catch (error) {
     if (error.message == "Game won") {
       gameInProgress = false;
+      
     } else throw error;
   }
 }
