@@ -113,12 +113,12 @@ balls.forEach(({ x, y }) => {
 });
 
 // Wall metadata
-let mapData;
+let mapData,walls,holes;
 
 socket.on("receieveMap",(maze)=>{
   mazeData = maze;
 
-  const walls = mazeData.map((wall) => ({
+  walls = mazeData.map((wall) => ({
     x: wall.column * (pathW + wallW),
     y: wall.row * (pathW + wallW),
     horizontal: wall.horizontal,
@@ -140,7 +140,7 @@ socket.on("receieveMap",(maze)=>{
     mazeElement.appendChild(wall);
   });
   
-  const holes = [{ column: numRows / 2, row: numCols / 2 }].map((hole) => ({
+  holes = [{ column: numRows / 2, row: numCols / 2 }].map((hole) => ({
     x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
     y: hole.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
   }));
@@ -156,6 +156,11 @@ socket.on("receieveMap",(maze)=>{
 })
 
 socket.on("updateBall",({playerID,data})=>{
+
+  if (!gameInProgress){
+    gameInProgress=true
+    window.requestAnimationFrame(main)
+  }
   const rotationY = Math.minmax(data.gamma, 12); // Left to right tilt
   const rotationX = Math.minmax(data.beta, 12); // Front to back tilt
   const gravity = 1;
@@ -164,6 +169,7 @@ socket.on("updateBall",({playerID,data})=>{
   accelerationY = gravity * Math.sin((rotationX / 180) * Math.PI);
   frictionX = gravity * Math.cos((rotationY / 180) * Math.PI) * friction;
   frictionY = gravity * Math.cos((rotationX / 180) * Math.PI) * friction;
+
 })
 
 function resetGame() {
@@ -207,6 +213,7 @@ function resetGame() {
 
 function main(timestamp) {
   // It is possible to reset the game mid-game. This case the look should stop
+
   if (!gameInProgress) return;
 
   if (previousTimestamp === undefined) {
@@ -507,3 +514,4 @@ function main(timestamp) {
     } else throw error;
   }
 }
+
