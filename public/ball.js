@@ -550,7 +550,7 @@ function main(timestamp) {
 
             const id = socket_to_ball_id[index];
 
-            socket.to(currRoom).emit("playAudio",id);
+            socket.emit("playAudio",id);
             winner = index;
             throw Error("Game over")
           }
@@ -570,7 +570,7 @@ function main(timestamp) {
       index++;
       previousTimestamp = timestamp;
       window.requestAnimationFrame(main);
-      
+
     }
   } catch (error) {
     if (error.message == "Game over") {
