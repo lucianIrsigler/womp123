@@ -153,4 +153,15 @@ button:hover {
 h3 {
     margin-left: 10px; /* Adjust the left margin if needed */
 }
+.custom-select {
+    margin-bottom: 15px;
+  }
+  
+  .custom-select select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+  }
 
+  
