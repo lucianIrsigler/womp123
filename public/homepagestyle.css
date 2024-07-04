@@ -1,15 +1,16 @@
 body {
-  background-color: #f0f0f0;
-  /* font-family: Arial, sans-serif; */
+  /* background-color: #f0f0f0; */
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
   text-align: center;
   display: flex;
   flex-direction: column;
   min-height: 100vh; /* Ensure the body takes up at least the full viewport height */
+  background: linear-gradient(to right, red, yellow, green, blue);
 }
 
 .header {
-  background-color: #000000;
-  color: #ffffff;
+  /* background-color: #000000; */
+  /* color: #ffffff; */
   padding: 20px;
   text-align: center;
   position: relative;
@@ -67,7 +68,7 @@ body {
 }
 
 .footer {
-  background-color: #333;
+  background-color: #000000;
   color: white;
   width: 100%;
   text-align: center;
