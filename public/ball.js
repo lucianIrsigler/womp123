@@ -651,7 +651,7 @@ function main(timestamp) {
             y: ball.nextY,
           });
 
-          if (distance <= 12 / 2) {
+          if (distance <= 15 / 2) {
             ball.velocityX = -1.5 * ball.velocityX;
             ball.velocityY = -1.5 * ball.velocityY;
           }
