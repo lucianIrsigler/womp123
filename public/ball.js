@@ -256,6 +256,13 @@ function updateThing(garden, ball, beta, gamma) {
 }
 
 function resetGame(room) {
+  
+  
+
+    
+
+
+
   previousTimestamp = undefined;
   gameInProgress = false;
   mouseStartX = undefined;
@@ -584,6 +591,34 @@ function main(timestamp) {
           var audio = new Audio("audio/downer_noise.mp3");
           audio.play();
           numTimesErrorPlayed+=1;
+
+          confetti({
+            particleCount: 100,
+            spread: 120,
+            origin: { y: 0.6,x:0.2 },
+            });
+      
+          confetti({
+            particleCount: 100,
+            spread: 120,
+            origin: { y: 0.4,x:0.4 },
+            });
+      
+            confetti({
+              particleCount: 100,
+              spread: 120,
+              origin: { y: 0.6,x:0.7 },
+            });
+      
+      
+            confetti({
+              particleCount: 100,
+              spread: 120,
+              origin: { y: 0.9,x:0.5 },
+            });
+            
+          
+
         }
       
     } else throw error;
