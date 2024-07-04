@@ -658,8 +658,8 @@ function main(timestamp) {
           });
 
           if (distance <= holeSize / 2) {
-            ball.velocityX = 0;
-            ball.velocityY = 0;
+            ball.velocityX = 0.01;
+            ball.velocityY = 0.01;
           }
         });
 
