@@ -652,8 +652,8 @@ function main(timestamp) {
           });
 
           if (distance <= 15 / 2) {
-            ball.velocityX = -1.5 * ball.velocityX;
-            ball.velocityY = -1.5 * ball.velocityY;
+            ball.velocityX = -5 * ball.velocityX;
+            ball.velocityY = -5 * ball.velocityY;
           }
         });
 
