@@ -108,6 +108,7 @@ let holeElements = [];
 socket_to_ball_name = {}
 socket_to_ball_id = {}
 let currRoom;
+let currID
 
 let winner;
 
@@ -117,6 +118,8 @@ let mapData, walls, holes;
 socket.on("receieveMap", ({ map, room,roomCode }) => {
   mazeData = map;
   currRoom = roomCode
+  currID = socket.id
+
 
   walls = mazeData.map((wall) => ({
     x: wall.column * (pathW + wallW),
@@ -549,9 +552,7 @@ function main(timestamp) {
             document.getElementById("game-start-title").textContent = "Winner:"+socket_to_ball_name[index];
 
             const id = socket_to_ball_id[index];
-
-            socket.emit("playAudio",id);
-            winner = index;
+            winner = id
             throw Error("Game over")
           }
         });
@@ -574,7 +575,11 @@ function main(timestamp) {
     }
   } catch (error) {
     if (error.message == "Game over") {
-      ;
+        if (winner!==currID){
+          var audio = new Audio("audio/downer_noise.mp3")
+          audio.play()
+        }
+      
     } else throw error;
   }
 }
