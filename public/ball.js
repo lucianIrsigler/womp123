@@ -1,5 +1,5 @@
-let colors = ["red", "green", "blue", "purple"];
-let softColors = ["#ff9b9b", "#6fc276", "#d1dff6", "#A66FB5"];
+let colors = ["red", "green", "blue", "yellow"];
+let softColors = ["red", "green", "blue", "yellow"];
 let key;
 
 Math.minmax = (value, limit) => {
@@ -622,8 +622,8 @@ function main(timestamp) {
           });
 
           if (distance <= holeSize / 2) {
-            ball.velocityX = slow(ball.velocityX, 0.25);
-            ball.velocityY = slow(ball.velocityY, 0.25);
+            ball.velocityX = slow(ball.velocityX, 0.1);
+            ball.velocityY = slow(ball.velocityY, 0.1);
           }
         });
 
@@ -634,8 +634,8 @@ function main(timestamp) {
           });
 
           if (distance <= holeSize / 2) {
-            ball.velocityX = slow(ball.velocityX, 1);
-            ball.velocityY = slow(ball.velocityY, 1);
+            ball.velocityX = slow(ball.velocityX, 0.5);
+            ball.velocityY = slow(ball.velocityY, 0.5);
           }
         });
 
