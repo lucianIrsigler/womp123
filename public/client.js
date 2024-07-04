@@ -115,7 +115,7 @@ joinRoomBtn.addEventListener("click", () => {
 
 submitJoinBtn.addEventListener("click", () => {
   const name = playerNameInput.value.trim();
-  const roomCode = roomCodeInput.value.trim();
+  const roomCode = roomCodeInput.value.trim().toUpperCase();
   if (name && roomCode) {
     socket.emit("joinRoom", { name, roomCode });
   }
