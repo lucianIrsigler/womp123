@@ -86,7 +86,7 @@ const mazeElement = document.getElementById("maze");
 
 let hardMode = false;
 let previousTimestamp;
-let gameInProgress;
+let gameInProgress = null;
 let mouseStartX;
 let mouseStartY;
 let accelerationX;
@@ -181,9 +181,14 @@ socket.on("updateBall", ({ data, host }) => {
     console.log("no data");
     return;
   }
-  if (!gameInProgress) {
+
+  if (gameInProgress==null) {
     gameInProgress = true;
     window.requestAnimationFrame(main);
+  }
+
+  if (!gameInProgress){
+    return
   }
 
   //console.log(host)
@@ -572,7 +577,6 @@ function main(timestamp) {
       index++;
       previousTimestamp = timestamp;
       window.requestAnimationFrame(main);
-
     }
   } catch (error) {
     if (error.message == "Game over") {
