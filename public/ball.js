@@ -187,10 +187,6 @@ socket.on("updateBall", ({ data, host }) => {
     window.requestAnimationFrame(main);
   }
 
-  if (!gameInProgress){
-    return
-  }
-
   //console.log(host)
   const rotationY = Math.minmax(data.gamma, 12); // Left to right tilt
   const rotationX = Math.minmax(data.beta, 12); // Front to back tilt
@@ -616,7 +612,7 @@ function main(timestamp) {
               spread: 120,
               origin: { y: 0.9,x:0.5 },
             });
-            
+
           
 
         }
