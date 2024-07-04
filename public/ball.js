@@ -1,5 +1,5 @@
-let colors = ["red", "green", "blue", "yellow"];
-let softColors = ["red", "green", "blue", "yellow"];
+let colors = ["red", "green", "blue", "purple"];
+let softColors = ["red", "green", "blue", "purple"];
 let key;
 
 Math.minmax = (value, limit) => {
