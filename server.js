@@ -38,9 +38,8 @@ io.on("connection", (socket) => {
         socket.join(roomCode);
         io.in(roomCode).emit("playerJoined", { name, room });
         io.to(roomCode).emit("updatePlayerList", room.players);
-        console.log(room.players);
 
-        socket.emit("joinedRoom", { roomCode, host: false });
+        socket.emit("joinedRoom", { roomCode, isHost: false });
 
         // Check if room is full after joining
         if (room.players.length === MAX_PLAYERS) {
@@ -55,16 +54,18 @@ io.on("connection", (socket) => {
   socket.on("startGame", (roomCode) => {
     const room = rooms.get(roomCode);
     if (room && room.host === socket.id) {
-      io.to(roomCode).emit("gameStarted");
+      io.to(roomCode).emit("gameStarted", { room });
     }
   });
 
   socket.on("transmitMap", ({ map, roomCode }) => {
     const room = rooms.get(roomCode);
-    io.to(roomCode).emit("receieveMap", { map, room,roomCode });
+    let column = Math.random();
+    let row = Math.random();
+    console.log(column, row);
+    io.to(roomCode).emit("receieveMap", { map, room, column, row, roomCode });
   });
 
-  
   socket.on("gyroscopeData", ({ roomCode, data }) => {
     let res = { gamma: 0, beta: 0 };
     const room = rooms.get(roomCode);

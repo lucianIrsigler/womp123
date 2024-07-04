@@ -129,7 +129,6 @@ startGameBtn.addEventListener("click", () => {
   }
 });
 
-
 socket.on("roomCreated", (roomCode) => {
   currentRoom = roomCode;
   isHost = true;
@@ -155,7 +154,6 @@ socket.on("playerJoined", ({ name, room }) => {
   const li = document.createElement("li");
   li.textContent = name;
   playerList.appendChild(li);
-
 });
 
 socket.on("updatePlayerList", (players) => {
@@ -177,16 +175,6 @@ socket.on("roomFull", () => {
     startGameBtn.disabled = false;
   }
 });
-
-socket.on("playAudio",(id)=>{
-
-  if (socket.id!==id){
-    var audio = new Audio("audio/downer_noise.mp3")
-    audio.play()
-  }
-})
-
-
 
 socket.on("gameStarted", (room) => {
   lobby.style.display = "none";
@@ -214,8 +202,6 @@ socket.on("gameStarted", (room) => {
       window.addEventListener("deviceorientation", handleOrientation);
       startSendingGyroscopeData();
     }
-
-
   }
 });
 
@@ -259,7 +245,7 @@ function startSendingGyroscopeData() {
         roomCode: currentRoom,
         data: gyroscopeData,
       });
-    }, 200); // Send data every 100ms
+    }, 100); // Send data every 100ms
   }
 }
 
@@ -335,3 +321,23 @@ function updateThing(garden, ball, beta, gamma) {
   ball.style.top = `${(maxX * x) / 180 - 10}px`; // rotating device around the x axis moves the ball vertically
 }
 
+const darkZones = [
+  { x: 50, y: 50, width: 100, height: 100 },
+  { x: 200, y: 200, width: 100, height: 100 },
+];
+
+function drawDarkZones(ctx) {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // Semi-transparent black
+  darkZones.forEach((zone) => {
+    ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
+  });
+}
+
+function isInDarkZone(ball, zone) {
+  return (
+    ball.x + ball.radius > zone.x &&
+    ball.x - ball.radius < zone.x + zone.width &&
+    ball.y + ball.radius > zone.y &&
+    ball.y - ball.radius < zone.y + zone.height
+  );
+}

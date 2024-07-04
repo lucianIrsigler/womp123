@@ -1,7 +1,6 @@
-let colors = ["red", "green", "blue", "yellow"];
-let softColors = ["#ff9b9b", "#6fc276", "#d1dff6", "#fff49b"];
-let index = 0
-
+let colors = ["red", "green", "blue", "purple"];
+let softColors = ["#ff9b9b", "#6fc276", "#d1dff6", "#A66FB5"];
+let key;
 
 Math.minmax = (value, limit) => {
   return Math.max(Math.min(value, limit), -limit);
@@ -30,32 +29,19 @@ const closestItCanBe = (cap, ball) => {
 
 // Roll the ball around the wall cap
 const rollAroundCap = (cap, ball) => {
-  // The direction the ball can't move any further because the wall holds it back
   let impactAngle = getAngle(ball, cap);
-
-  // The direction the ball wants to move based on it's velocity
   let heading = getAngle(
     { x: 0, y: 0 },
     { x: ball.velocityX, y: ball.velocityY }
   );
-
-  // The angle between the impact direction and the ball's desired direction
-  // The smaller this angle is, the bigger the impact
-  // The closer it is to 90 degrees the smoother it gets (at 90 there would be no collision)
   let impactHeadingAngle = impactAngle - heading;
-
-  // Velocity distance if not hit would have occurred
   const velocityMagnitude = distance2D(
     { x: 0, y: 0 },
     { x: ball.velocityX, y: ball.velocityY }
   );
-  // Velocity component diagonal to the impact
   const velocityMagnitudeDiagonalToTheImpact =
     Math.sin(impactHeadingAngle) * velocityMagnitude;
-
-  // How far should the ball be from the wall cap
   const closestDistance = wallW / 2 + ballSize / 2;
-
   const rotationAngle = Math.atan(
     velocityMagnitudeDiagonalToTheImpact / closestDistance
   );
@@ -105,8 +91,8 @@ let balls = [];
 let ballElements = [];
 let holeElements = [];
 
-socket_to_ball_name = {}
-socket_to_ball_id = {}
+socket_to_ball_name = {};
+socket_to_ball_id = {};
 let currRoom;
 let currID;
 let numTimesErrorPlayed = 0;
@@ -114,13 +100,18 @@ let numTimesErrorPlayed = 0;
 let winner;
 
 // Wall metadata
-let mapData, walls, holes;
+let mapData,
+  walls,
+  holes,
+  plus_two_holes,
+  plus_four_holes,
+  reverse_holes,
+  skip_holes;
 
-socket.on("receieveMap", ({ map, room,roomCode }) => {
+socket.on("receieveMap", ({ map, room, column, row, roomCode }) => {
   mazeData = map;
-  currRoom = roomCode
-  currID = socket.id
-
+  currRoom = roomCode;
+  currID = socket.id;
 
   walls = mazeData.map((wall) => ({
     x: wall.column * (pathW + wallW),
@@ -157,6 +148,72 @@ socket.on("receieveMap", ({ map, room,roomCode }) => {
     holeElements.push(ball);
   });
 
+  plus_two_holes = [
+    { column: Math.floor(column * numCols), row: Math.floor(row * numRows) },
+  ].map((hole) => ({
+    x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
+    y: hole.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
+  }));
+
+  plus_two_holes.forEach(({ x, y }) => {
+    const hole = document.createElement("div");
+    hole.setAttribute("class", "plus-two-hole");
+    hole.style.cssText = `left: ${x}px; top: ${y}px;`;
+    mazeElement.appendChild(hole);
+    holeElements.push(hole);
+  });
+
+  plus_four_holes = [
+    { column: Math.floor(row * numRows), row: Math.floor(column * numCols) },
+  ].map((hole) => ({
+    x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
+    y: hole.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
+  }));
+
+  plus_four_holes.forEach(({ x, y }) => {
+    const hole = document.createElement("div");
+    hole.setAttribute("class", "plus-four-hole");
+    hole.style.cssText = `left: ${x}px; top: ${y}px;`;
+    mazeElement.appendChild(hole);
+    holeElements.push(hole);
+  });
+
+  reverse_holes = [
+    {
+      column: Math.floor((row * numRows) / 2),
+      row: Math.floor((column * numCols) / 3),
+    },
+  ].map((hole) => ({
+    x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
+    y: hole.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
+  }));
+
+  reverse_holes.forEach(({ x, y }) => {
+    const hole = document.createElement("div");
+    hole.setAttribute("class", "reverse-hole");
+    hole.style.cssText = `left: ${x}px; top: ${y}px;`;
+    mazeElement.appendChild(hole);
+    holeElements.push(hole);
+  });
+
+  skip_holes = [
+    {
+      column: Math.floor((row * numRows) / 3),
+      row: Math.floor((column * numCols) / 2),
+    },
+  ].map((hole) => ({
+    x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
+    y: hole.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
+  }));
+
+  skip_holes.forEach(({ x, y }) => {
+    const hole = document.createElement("div");
+    hole.setAttribute("class", "skip-hole");
+    hole.style.cssText = `left: ${x}px; top: ${y}px;`;
+    mazeElement.appendChild(hole);
+    holeElements.push(hole);
+  });
+
   resetGame(room);
   balls.forEach(({ x, y }, index) => {
     const ball = document.createElement("div");
@@ -166,14 +223,12 @@ socket.on("receieveMap", ({ map, room,roomCode }) => {
     ball.id = `ball-${id}`;
     mazeElement.appendChild(ball);
     ballElements.push(ball);
+
     const name = room.players[index].name;
-    
-    socket_to_ball_name[index] = name
-    socket_to_ball_id[index] = id
+
+    socket_to_ball_name[index] = name;
+    socket_to_ball_id[index] = id;
   });
-
-  console.log(roomCode)
-
 });
 
 socket.on("updateBall", ({ data, host }) => {
@@ -181,7 +236,6 @@ socket.on("updateBall", ({ data, host }) => {
     console.log("no data");
     return;
   }
-
   if (!gameInProgress) {
     gameInProgress = true;
     window.requestAnimationFrame(main);
@@ -252,13 +306,6 @@ function updateThing(garden, ball, beta, gamma) {
 }
 
 function resetGame(room) {
-  
-  
-
-    
-
-
-
   previousTimestamp = undefined;
   gameInProgress = false;
   mouseStartX = undefined;
@@ -304,8 +351,7 @@ function resetGame(room) {
 
 function main(timestamp) {
   // It is possible to reset the game mid-game. This case the look should stop
-  
-  
+
   if (!gameInProgress) return;
 
   if (previousTimestamp === undefined) {
@@ -319,15 +365,16 @@ function main(timestamp) {
   // Time passed since last cycle divided by 16
   // This function gets called every 16 ms on average so dividing by 16 will result in 1
   const timeElapsed = (timestamp - previousTimestamp) / 16;
-  try {
-    index = 0
 
+  try {
+    index = 0;
     // If mouse didn't move yet don't do anything
     if (accelerationX != undefined && accelerationY != undefined) {
       const velocityChangeX = accelerationX * timeElapsed;
       const velocityChangeY = accelerationY * timeElapsed;
       const frictionDeltaX = frictionX * timeElapsed;
       const frictionDeltaY = frictionY * timeElapsed;
+
       balls.forEach((ball) => {
         if (velocityChangeX == 0) {
           // No rotation, the plane is flat
@@ -548,23 +595,84 @@ function main(timestamp) {
             }
           }
         });
-        
+
         holes.forEach((hole, hi) => {
           const distance = distance2D(hole, {
             x: ball.nextX,
             y: ball.nextY,
           });
+
           if (distance <= holeSize / 2) {
             // The ball fell into a hole
             holeElements[hi].style.backgroundColor = "green";
-            document.getElementById("game-start-title").textContent = "Winner:"+socket_to_ball_name[index];
+            document.getElementById("game-start-title").textContent =
+              "Winner:" + socket_to_ball_name[index];
 
             const id = socket_to_ball_id[index];
-            winner = id
+            winner = id;
             gameInProgress = false;
-            throw Error("Game over")
+            throw Error("Game over");
           }
         });
+
+        plus_two_holes.forEach((hole, hi) => {
+          const distance = distance2D(hole, {
+            x: ball.nextX,
+            y: ball.nextY,
+          });
+
+          if (distance <= holeSize / 2) {
+            ball.velocityX = slow(ball.velocityX, 0.25);
+            ball.velocityY = slow(ball.velocityY, 0.25);
+          }
+        });
+
+        plus_four_holes.forEach((hole, hi) => {
+          const distance = distance2D(hole, {
+            x: ball.nextX,
+            y: ball.nextY,
+          });
+
+          if (distance <= holeSize / 2) {
+            ball.velocityX = slow(ball.velocityX, 1);
+            ball.velocityY = slow(ball.velocityY, 1);
+          }
+        });
+
+        reverse_holes.forEach((hole, hi) => {
+          const distance = distance2D(hole, {
+            x: ball.nextX,
+            y: ball.nextY,
+          });
+
+          if (distance <= holeSize / 2) {
+            ball.velocityX = -1.5 * ball.velocityX;
+            ball.velocityY = -1.5 * ball.velocityY;
+          }
+        });
+
+        skip_holes.forEach((hole, hi) => {
+          const distance = distance2D(hole, {
+            x: ball.nextX,
+            y: ball.nextY,
+          });
+
+          if (distance <= holeSize / 2) {
+            ball.velocityX = 0;
+            ball.velocityY = 0;
+          }
+        });
+
+        if (key === "ArrowUp") {
+          ball.velocityY = Math.max(ball.velocityY - 0.25, -maxVelocity);
+        } else if (key === "ArrowDown") {
+          ball.velocityY = Math.min(ball.velocityY + 0.25, maxVelocity);
+        } else if (key === "ArrowLeft") {
+          ball.velocityX = Math.max(ball.velocityX - 0.25, -maxVelocity);
+        } else if (key === "ArrowRight") {
+          ball.velocityX = Math.min(ball.velocityX + 0.25, maxVelocity);
+        }
+
         // Adjust ball metadata
         ball.x = ball.x + ball.velocityX;
         ball.y = ball.y + ball.velocityY;
@@ -583,40 +691,35 @@ function main(timestamp) {
     }
   } catch (error) {
     if (error.message == "Game over") {
-        if (winner!==currID && numTimesErrorPlayed==0){
-          var audio = new Audio("audio/downer_noise.mp3");
-          audio.play();
-          numTimesErrorPlayed+=1;
+      if (winner !== currID && numTimesErrorPlayed == 0) {
+        var audio = new Audio("audio/downer_noise.mp3");
+        audio.play();
+        numTimesErrorPlayed += 1;
 
-          confetti({
-            particleCount: 100,
-            spread: 120,
-            origin: { y: 0.6,x:0.2 },
-            });
-      
-          confetti({
-            particleCount: 100,
-            spread: 120,
-            origin: { y: 0.4,x:0.4 },
-            });
-      
-            confetti({
-              particleCount: 100,
-              spread: 120,
-              origin: { y: 0.6,x:0.7 },
-            });
-      
-      
-            confetti({
-              particleCount: 100,
-              spread: 120,
-              origin: { y: 0.9,x:0.5 },
-            });
+        confetti({
+          particleCount: 100,
+          spread: 120,
+          origin: { y: 0.6, x: 0.2 },
+        });
 
-          
+        confetti({
+          particleCount: 100,
+          spread: 120,
+          origin: { y: 0.4, x: 0.4 },
+        });
 
-        }
-      
+        confetti({
+          particleCount: 100,
+          spread: 120,
+          origin: { y: 0.6, x: 0.7 },
+        });
+
+        confetti({
+          particleCount: 100,
+          spread: 120,
+          origin: { y: 0.9, x: 0.5 },
+        });
+      }
     } else throw error;
   }
 }
