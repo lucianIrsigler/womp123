@@ -64,6 +64,7 @@ io.on("connection", (socket) => {
     io.to(roomCode).emit("receieveMap", { map, room,roomCode });
   });
 
+  
   socket.on("gyroscopeData", ({ roomCode, data }) => {
     let res = { gamma: 0, beta: 0 };
     const room = rooms.get(roomCode);

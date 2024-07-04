@@ -108,7 +108,8 @@ let holeElements = [];
 socket_to_ball_name = {}
 socket_to_ball_id = {}
 let currRoom;
-let currID
+let currID;
+let numTimesErrorPlayed = 0;
 
 let winner;
 
@@ -548,11 +549,11 @@ function main(timestamp) {
           if (distance <= holeSize / 2) {
             // The ball fell into a hole
             holeElements[hi].style.backgroundColor = "green";
-            gameInProgress = false;
             document.getElementById("game-start-title").textContent = "Winner:"+socket_to_ball_name[index];
 
             const id = socket_to_ball_id[index];
             winner = id
+            gameInProgress = false;
             throw Error("Game over")
           }
         });
@@ -575,9 +576,10 @@ function main(timestamp) {
     }
   } catch (error) {
     if (error.message == "Game over") {
-        if (winner!==currID){
-          var audio = new Audio("audio/downer_noise.mp3")
-          audio.play()
+        if (winner!==currID && numTimesErrorPlayed==0){
+          var audio = new Audio("audio/downer_noise.mp3");
+          audio.play();
+          numTimesErrorPlayed+=1;
         }
       
     } else throw error;
