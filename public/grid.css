@@ -231,8 +231,8 @@ a:visited {
 
 .reverse-hole {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 20%;
   background-image: url("images/reverse.png");
   background-size: cover; /* Adjust as needed */
