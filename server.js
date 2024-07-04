@@ -83,8 +83,8 @@ io.on("connection", (socket) => {
         res.beta += data1.beta;
       });
 
-      res.gamma = res.gamma / room.players.length;
-      res.beta = res.beta / room.players.length;
+      // res.gamma = res.gamma / room.players.length;
+      // res.beta = res.beta / room.players.length;
 
       io.to(roomCode).emit("gyroscopeUpdate", {
         playerId: socket.id,
