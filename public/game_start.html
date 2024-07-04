@@ -13,7 +13,8 @@
         align-items: center;
         height: 100vh;
         margin: 0;
-        background-color: #f0f0f0;
+        background: linear-gradient(to right, red, yellow, green, blue);
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
       }
 
       #center {
@@ -59,26 +60,26 @@
   </head>
 
   <body>
+    <img src="images/welcome_to_the_game.png" class="center"></img>
+
     <div id="main-menu">
-      <h1>Welcome to the Game</h1>
-      <button id="create-room">Start a Room</button>
-      <button id="join-room">Join a Room</button>
+      <button id="create-room" style="background-color: black; width: 120px; height: 60px; font-size: medium; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Start a Room</button>
+      <button id="join-room" style="background-color: black; width: 120px; height: 60px; font-size: medium; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Join a Room</button>
     </div>
 
     <div id="join-form" style="display: none">
-      <input type="text" id="player-name" placeholder="Enter your name" />
-      <input type="text" id="room-code" placeholder="Enter room code" />
-      <button id="submit-join">Join</button>
+      <input type="text" id="player-name" placeholder="Enter your name" style="width: 200px; height: 40px;"/>
+      <input type="text" id="room-code" placeholder="Enter room code"  style="width: 200px; height: 40px; text-transform: uppercase;"/>
+      <button id="submit-join" style="background-color: black; width: 60px; height: 40px; font-size: medium; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">Join</button>
     </div>
 
     <div id="lobby" style="display: none">
-      <h2>Lobby</h2>
-      <p>Room Code: <span id="room-code-display"></span></p>
+      <h2 style="background-color: #fff; font-size: xx-large;">Lobby</h2>
+      <p style="font-size: x-large;">Room Code: <span id="room-code-display"></span></p>
       <p id="room-status"></p>
-      <h3>Players:</h3>
-      <ul id="player-list"></ul>
-      <!--CHANGED-->
-      <button id="start-game" style="display: none">Start Game</button>
+      <h3 style="font-size: x-large;">Players:</h3>
+      <ul id="player-list" style="list-style-type:none";></ul>
+      <button id="start-game" style="background-color: black; width: 200px; height: 60px; font-size: medium; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; display: none;">Start Game</button>
     </div>
 
     <h2 id="game-start-title" style="display: none">Game Started!</h2>
@@ -162,7 +163,6 @@
     <script src="client.js"></script>
     <script src="ball.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.9.3/tsparticles.confetti.bundle.min.js"></script>
-
     <!-- <script src="tilt_game.js"></script> -->
   </body>
 </html>
