@@ -627,9 +627,9 @@ function main(timestamp) {
             y: ball.nextY,
           });
 
-          if (distance <= holeSize / 2) {
-            ball.velocityX = slow(ball.velocityX, 0.1);
-            ball.velocityY = slow(ball.velocityY, 0.1);
+          if (distance <= 15 / 2) {
+            ball.velocityX = slow(ball.velocityX, 0.05);
+            ball.velocityY = slow(ball.velocityY, 0.05);
           }
         });
 
@@ -639,9 +639,9 @@ function main(timestamp) {
             y: ball.nextY,
           });
 
-          if (distance <= holeSize / 2) {
-            ball.velocityX = slow(ball.velocityX, 0.5);
-            ball.velocityY = slow(ball.velocityY, 0.5);
+          if (distance <= 15 / 2) {
+            ball.velocityX = slow(ball.velocityX, 0.2);
+            ball.velocityY = slow(ball.velocityY, 0.2);
           }
         });
 
@@ -651,7 +651,7 @@ function main(timestamp) {
             y: ball.nextY,
           });
 
-          if (distance <= holeSize / 2) {
+          if (distance <= 8 / 2) {
             ball.velocityX = -1.5 * ball.velocityX;
             ball.velocityY = -1.5 * ball.velocityY;
           }
@@ -663,13 +663,13 @@ function main(timestamp) {
             y: ball.nextY,
           });
 
-          if (distance <= holeSize / 2) {
+          if (distance <= 15 / 2) {
             ball.velocityX = 0.01;
             ball.velocityY = 0.01;
           }
         });
 
-        if (key === "ArrowUp") {
+        /*if (key === "ArrowUp") {
           ball.velocityY = Math.max(ball.velocityY - 0.25, -maxVelocity);
         } else if (key === "ArrowDown") {
           ball.velocityY = Math.min(ball.velocityY + 0.25, maxVelocity);
@@ -677,7 +677,7 @@ function main(timestamp) {
           ball.velocityX = Math.max(ball.velocityX - 0.25, -maxVelocity);
         } else if (key === "ArrowRight") {
           ball.velocityX = Math.min(ball.velocityX + 0.25, maxVelocity);
-        }
+        }*/
 
         // Adjust ball metadata
         ball.x = ball.x + ball.velocityX;
