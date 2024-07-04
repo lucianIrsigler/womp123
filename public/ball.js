@@ -149,7 +149,10 @@ socket.on("receieveMap", ({ map, room, column, row, roomCode }) => {
   });
 
   plus_two_holes = [
-    { column: Math.floor(column * numCols), row: Math.floor(row * numRows) },
+    {
+      column: Math.floor(column * numCols + 1),
+      row: Math.floor(row * numRows + 1),
+    },
   ].map((hole) => ({
     x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
     y: hole.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
@@ -164,7 +167,10 @@ socket.on("receieveMap", ({ map, room, column, row, roomCode }) => {
   });
 
   plus_four_holes = [
-    { column: Math.floor(row * numRows), row: Math.floor(column * numCols) },
+    {
+      column: Math.floor(row * numRows + 1),
+      row: Math.floor(column * numCols + 1),
+    },
   ].map((hole) => ({
     x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
     y: hole.row * (wallW + pathW) + (wallW / 2 + pathW / 2),
@@ -180,8 +186,8 @@ socket.on("receieveMap", ({ map, room, column, row, roomCode }) => {
 
   reverse_holes = [
     {
-      column: Math.floor((row * numRows) / 2),
-      row: Math.floor((column * numCols) / 3),
+      column: Math.floor((row * numRows) / 2 + 1),
+      row: Math.floor((column * numCols) / 3 + 1),
     },
   ].map((hole) => ({
     x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
@@ -198,8 +204,8 @@ socket.on("receieveMap", ({ map, room, column, row, roomCode }) => {
 
   skip_holes = [
     {
-      column: Math.floor((row * numRows) / 3),
-      row: Math.floor((column * numCols) / 2),
+      column: Math.floor((row * numRows) / 3 + 1),
+      row: Math.floor((column * numCols) / 2 + 1),
     },
   ].map((hole) => ({
     x: hole.column * (wallW + pathW) + (wallW / 2 + pathW / 2),
